@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moja Biblioteka</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+  <header class="bg-gray-800 p-4">
+    <div class="container mx-auto">
+      <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
+    </div>
+  </header>
+
+  <div class="container mx-auto flex flex-col items-center">
+    <h2 class="text-xl font-semibold mt-4">Dodaj nową książkę</h2>
+    <form action="/add-book" method="POST" enctype="multipart/form-data" class="w-full max-w-md mt-4">
+      <div class="mb-4">
+        <label for="title" class="block text-gray-300">Tytuł:</label>
+        <input type="text" id="title" name="title" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="author" class="block text-gray-300">Autor:</label>
+        <input type="text" id="author" name="author" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="coverImage" class="block text-gray-300">Okładka:</label>
+        <input type="file" id="coverImage" name="coverImage" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Dodaj książkę
+      </button>
+    </form>
+  </div>
+
+  <!-- Book list -->
+  <h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
+  <ul class="container mx-auto mt-4">
+    <% books.forEach((book) => { %>
+      <li class="bg-gray-700 p-4 mb-4 rounded-lg">
+        <h2 class="text-xl font-semibold"><%= book.title %></h2>
+        <p class="text-gray-300">Autor: <%= book.author %></p>
+        <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>
