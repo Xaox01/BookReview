@@ -11,7 +11,11 @@ const expressSession = require('express-session');
 const connectMongoDBSession = require('connect-mongodb-session')(expressSession);
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
-const expressLayouts = require('express-ejs-layouts'); // Importuj express-ejs-layouts
+const TelegramBot = require('node-telegram-bot-api');
+const botToken = '6513166210:AAHj6_tmrF-p8AqSPYHzgCeUkBaSIcCkf4o';
+const bot = new TelegramBot(botToken, { polling: false });
+
+
 
 
 const app = express();
@@ -99,14 +103,15 @@ app.use(passport.session());
 
 app.get('/', async (req, res) => {
   try {
-    const books = await Book.find();
-    res.render('index', { books });
+    const books = await Book.find({}, 'title author coverImage createdAt updatedAt'); // Dodaj 'createdAt' i 'updatedAt' do zapytania
+    const username = req.user ? req.user.username : null;
+    const email = req.user ? req.user.email : null;
+    res.render('index', { books, username, email });
   } catch (err) {
     console.error(err);
     res.status(500).send('Błąd serwera');
   }
 });
-
 app.post('/add-book', upload.single('coverImage'), async (req, res) => {
   try {
     const { title, author } = req.body;
@@ -132,7 +137,15 @@ app.post(
   })
 );
 
-app.get('/profile', (req, res) => {
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next(); // Jeśli użytkownik jest zalogowany, kontynuuj żądanie
+  }
+  res.redirect('/login'); // Jeśli użytkownik nie jest zalogowany, przekieruj go na stronę logowania
+}
+
+
+app.get('/profile', ensureAuthenticated, (req, res) => {
   // Tutaj możesz dodać logikę, aby pobrać informacje o użytkowniku, jeśli są potrzebne
   const username = req.user ? req.user.username : ''; // Pobieramy nazwę użytkownika z sesji
   const email = req.user ? req.user.email : ''; // Pobieramy adres e-mail z sesji
@@ -163,12 +176,34 @@ app.post('/register', async (req, res) => {
     await User.create({ username, email, password });
     req.flash('success', 'Rejestracja zakończona pomyślnie. Możesz się teraz zalogować.');
     res.redirect('/login');
+
+    // Wysłanie wiadomości na Telegram
+    const registrationMessage = `
+Nowy użytkownik zarejestrował się:
+- Nazwa użytkownika: ${username}
+- Adres e-mail: ${email}
+`;
+    const chatId = '1997555641'; // Identyfikator czatu, do którego chcesz wysłać wiadomość
+
+    sendTelegramMessage(bot, chatId, registrationMessage);
+
   } catch (error) {
     console.error(error);
     req.flash('error', 'Wystąpił błąd podczas rejestracji');
     res.redirect('/register');
   }
 });
+
+// Funkcja do wysyłania wiadomości na Telegram
+function sendTelegramMessage(bot, chatId, message) {
+  bot.sendMessage(chatId, message)
+    .then(() => {
+      console.log('Wiadomość na Telegramie została wysłana.');
+    })
+    .catch((error) => {
+      console.error('Błąd podczas wysyłania wiadomości na Telegramie:', error);
+    });
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

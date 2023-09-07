@@ -44,9 +44,10 @@
     </div>
   </header>
 
-  <!-- Formularz dodawania nowej książki - wyśrodkowany -->
-  <div class="container mx-auto flex flex-col items-center">
-    <h2 class="text-xl font-semibold mt-4">Dodaj nową książkę</h2>
+ <!-- Formularz dodawania nowej książki - wyśrodkowany -->
+<div class="container mx-auto flex flex-col items-center">
+  <h2 class="text-xl font-semibold mt-4">Dodaj nową książkę</h2>
+  <% if (username && email) { %>
     <form action="/add-book" method="POST" enctype="multipart/form-data" class="w-full max-w-md mt-4">
       <div class="mb-4">
         <label for="title" class="block text-gray-300">Tytuł:</label>
@@ -70,26 +71,30 @@
         Dodaj książkę
       </button>
     </form>
-  </div>
+  <% } else { %>
+    <p> <a href="/login">zaloguj</a> się, aby dodać nową książkę.</p>
+  <% } %>
+</div>
 
-  <!-- Lista książek -->
-  <h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
-  <div class="container mx-auto mt-4">
-    <div class="flex flex-wrap -mx-4">
-      <% books.reverse().forEach((book, index) => { %>
-        <div class="w-1/4 px-4 mb-4">
-          <div class="book-column bg-gray-700 p-4 rounded-lg">
-            <h2 class="text-xl font-semibold"><%= book.title %></h2>
-            <p class="text-gray-300">Autor: <%= book.author %></p>
-            <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
-          </div>
+ <!-- Lista książek -->
+<h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
+<div class="container mx-auto mt-4">
+  <div class="flex flex-wrap -mx-4">
+    <% books.reverse().forEach((book, index) => { %>
+      <div class="w-1/4 px-4 mb-4">
+        <div class="book-column bg-gray-700 p-4 rounded-lg">
+          <h2 class="text-xl font-semibold"><%= book.title %></h2>
+          <p class="text-gray-300">Autor: <%= book.author %></p>
+          <p class="text-gray-300">Dodano: <%= new Date(book.createdAt).toLocaleString() %></p> <!-- Wyświetl createdAt -->
+          <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
         </div>
-        <% if ((index + 1) % 4 === 0) { %>
-          <div class="w-full"></div> <!-- Nowy wiersz -->
-        <% } %>
-      <% }); %>
-    </div>
+      </div>
+      <% if ((index + 1) % 4 === 0) { %>
+        <div class="w-full"></div> <!-- Nowy wiersz -->
+      <% } %>
+    <% }); %>
   </div>
+</div>
 
   <!-- JavaScript do wyświetlania nazwy pliku -->
   <script>
