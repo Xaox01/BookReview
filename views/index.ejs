@@ -6,12 +6,35 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white p-4">
-  <header class="bg-gray-800 p-4">
-    <div class="container mx-auto">
-      <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
+  <!-- Górny pasek nawigacyjny (header) -->
+  <header class="bg-gray-800 p-4 sticky top-0">
+    <div class="container mx-auto flex justify-between items-center">
+      <!-- Logo -->
+      <div class="flex items-center space-x-4">
+        <img src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/57891/open-book-emoji-clipart-xl.png" alt="Logo" class="h-8">
+        <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
+      </div>
+      <!-- Wyszukiwarka (środek) -->
+      <div class="flex-1 flex justify-center items-center">
+        <div class="relative">
+          <input type="text" id="search" name="search" placeholder="Szukaj..." class="w-64 px-3 py-1 text-gray-800 bg-gray-100 border rounded-full focus:outline-none focus:shadow-outline">
+          <button class="absolute top-0 right-0 mt-2 mr-3" type="submit">
+            <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Nawigacja -->
+      <nav>
+        <ul class="flex space-x-4">
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
+        </ul>
+      </nav>
     </div>
   </header>
 
+  <!-- Formularz dodawania nowej książki - wyśrodkowany -->
   <div class="container mx-auto flex flex-col items-center">
     <h2 class="text-xl font-semibold mt-4">Dodaj nową książkę</h2>
     <form action="/add-book" method="POST" enctype="multipart/form-data" class="w-full max-w-md mt-4">
@@ -24,25 +47,74 @@
         <input type="text" id="author" name="author" required class="w-full bg-gray-800 text-white border rounded p-2">
       </div>
       <div class="mb-4">
-        <label for="coverImage" class="block text-gray-300">Okładka:</label>
-        <input type="file" id="coverImage" name="coverImage" required class="w-full bg-gray-800 text-white border rounded p-2">
+        <label for="coverImage" class="block text-gray-300 cursor-pointer">
+          <span class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Prześlij okładkę
+          </span>
+          <input type="file" id="coverImage" name="coverImage" required class="w-0 h-0 overflow-hidden absolute">
+        </label>
+        <!-- Wyświetlenie nazwy pliku -->
+        <p class="text-gray-300" id="fileNameLabel">Wybrany plik: Brak pliku</p>
       </div>
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
         Dodaj książkę
       </button>
     </form>
   </div>
 
-  <!-- Book list -->
-  <h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
-  <ul class="container mx-auto mt-4">
-    <% books.forEach((book) => { %>
-      <li class="bg-gray-700 p-4 mb-4 rounded-lg">
-        <h2 class="text-xl font-semibold"><%= book.title %></h2>
-        <p class="text-gray-300">Autor: <%= book.author %></p>
-        <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
-      </li>
+  <!-- Lista książek -->
+  <!-- Lista książek -->
+<h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
+<div class="container mx-auto mt-4">
+  <div class="flex flex-wrap -mx-4">
+    <% books.reverse().forEach((book, index) => { %>
+      <div class="w-1/4 px-4 mb-4">
+        <div class="book-column bg-gray-700 p-4 rounded-lg">
+          <h2 class="text-xl font-semibold"><%= book.title %></h2>
+          <p class="text-gray-300">Autor: <%= book.author %></p>
+          <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+        </div>
+      </div>
+      <% if ((index + 1) % 4 === 0) { %>
+        <div class="w-full"></div> <!-- Nowy wiersz -->
+      <% } %>
     <% }); %>
-  </ul>
+  </div>
+</div>
+
+  <!-- JavaScript do wyświetlania nazwy pliku -->
+  <script>
+    const coverImageInput = document.getElementById('coverImage');
+    const fileNameLabel = document.getElementById('fileNameLabel');
+
+    coverImageInput.addEventListener('change', (event) => {
+      const fileName = event.target.files[0].name;
+      fileNameLabel.textContent = `Wybrany plik: ${fileName}`;
+    });
+  </script>
+
+  <!-- JavaScript do filtrowania książek -->
+<script>
+    const books = document.querySelectorAll('.book-column'); // Pobierz wszystkie kolumny z książkami
+    const searchInput = document.getElementById('search');
+  
+    // Nasłuchuj zmian w polu wyszukiwania
+    searchInput.addEventListener('input', () => {
+      const searchText = searchInput.value.toLowerCase(); // Pobierz wprowadzony tekst i przekształć na małe litery
+  
+      // Iteruj przez wszystkie kolumny z książkami i sprawdź, czy pasują do wprowadzonego tekstu
+      books.forEach((book) => {
+        const title = book.querySelector('h2').textContent.toLowerCase(); // Pobierz tytuł i przekształć na małe litery
+        const author = book.querySelector('.text-gray-300').textContent.toLowerCase(); // Pobierz autora i przekształć na małe litery
+  
+        if (title.includes(searchText) || author.includes(searchText)) {
+          book.style.display = 'block'; // Jeśli pasuje, pokaż kolumnę
+        } else {
+          book.style.display = 'none'; // W przeciwnym razie ukryj kolumnę
+        }
+      });
+    });
+  </script>
+  
 </body>
 </html>
