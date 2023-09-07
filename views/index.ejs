@@ -14,10 +14,17 @@
         <img src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/57891/open-book-emoji-clipart-xl.png" alt="Logo" class="h-8">
         <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
       </div>
-      <!-- Wyszukiwarka (środek) -->
-      <div class="flex-1 flex justify-center items-center">
+      <!-- Wyszukiwarka -->
+      <div class="flex items-center space-x-4"> <!-- Centrowanie -->
         <div class="relative">
-          <input type="text" id="search" name="search" placeholder="Szukaj..." class="w-64 px-3 py-1 text-gray-800 bg-gray-100 border rounded-full focus:outline-none focus:shadow-outline">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="Szukaj..."
+            class="w-64 px-3 py-1 text-gray-800 bg-gray-100 border rounded-full focus:outline-none focus:shadow-outline"
+            onkeyup="redirectToSearchResults(event)"
+          >
           <button class="absolute top-0 right-0 mt-2 mr-3" type="submit">
             <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
           </button>
@@ -25,10 +32,13 @@
       </div>
       <!-- Nawigacja -->
       <nav>
-        <ul class="flex space-x-4">
+        <ul class="flex space-x-4 items-center h-10"> <!-- Dodane klasy items-center i h-10 -->
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
+          <a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full"> <!-- Dodane klasy h-full -->
+            <span class="text-gray-300">Logowanie</span>
+          </a>
         </ul>
       </nav>
     </div>
@@ -63,24 +73,23 @@
   </div>
 
   <!-- Lista książek -->
-  <!-- Lista książek -->
-<h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
-<div class="container mx-auto mt-4">
-  <div class="flex flex-wrap -mx-4">
-    <% books.reverse().forEach((book, index) => { %>
-      <div class="w-1/4 px-4 mb-4">
-        <div class="book-column bg-gray-700 p-4 rounded-lg">
-          <h2 class="text-xl font-semibold"><%= book.title %></h2>
-          <p class="text-gray-300">Autor: <%= book.author %></p>
-          <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+  <h2 class="text-xl font-semibold mt-8">Twoje książki</h2>
+  <div class="container mx-auto mt-4">
+    <div class="flex flex-wrap -mx-4">
+      <% books.reverse().forEach((book, index) => { %>
+        <div class="w-1/4 px-4 mb-4">
+          <div class="book-column bg-gray-700 p-4 rounded-lg">
+            <h2 class="text-xl font-semibold"><%= book.title %></h2>
+            <p class="text-gray-300">Autor: <%= book.author %></p>
+            <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+          </div>
         </div>
-      </div>
-      <% if ((index + 1) % 4 === 0) { %>
-        <div class="w-full"></div> <!-- Nowy wiersz -->
-      <% } %>
-    <% }); %>
+        <% if ((index + 1) % 4 === 0) { %>
+          <div class="w-full"></div> <!-- Nowy wiersz -->
+        <% } %>
+      <% }); %>
+    </div>
   </div>
-</div>
 
   <!-- JavaScript do wyświetlania nazwy pliku -->
   <script>
@@ -94,27 +103,41 @@
   </script>
 
   <!-- JavaScript do filtrowania książek -->
-<script>
-    const books = document.querySelectorAll('.book-column'); // Pobierz wszystkie kolumny z książkami
+  <script>
+    const books = document.querySelectorAll('.book-column');
     const searchInput = document.getElementById('search');
-  
+
+    // Funkcja do przekierowania po naciśnięciu spacji
+    function redirectToSearchResults(event) {
+      if (event.key === ' ' && !searchInput.matches(':focus')) {
+        event.preventDefault(); // Zapobiegamy wprowadzeniu spacji w polu wyszukiwania
+        const searchText = searchInput.value.trim(); // Pobierz wprowadzony tekst po usunięciu białych znaków
+
+        if (searchText.length > 0) {
+          // Jeśli wprowadzony tekst nie jest pusty, przekieruj na stronę wyników wyszukiwania
+          window.location.href = `/search?query=${encodeURIComponent(searchText)}`;
+        }
+      }
+    }
+
     // Nasłuchuj zmian w polu wyszukiwania
     searchInput.addEventListener('input', () => {
-      const searchText = searchInput.value.toLowerCase(); // Pobierz wprowadzony tekst i przekształć na małe litery
-  
-      // Iteruj przez wszystkie kolumny z książkami i sprawdź, czy pasują do wprowadzonego tekstu
+      const searchText = searchInput.value.toLowerCase();
+
       books.forEach((book) => {
-        const title = book.querySelector('h2').textContent.toLowerCase(); // Pobierz tytuł i przekształć na małe litery
-        const author = book.querySelector('.text-gray-300').textContent.toLowerCase(); // Pobierz autora i przekształć na małe litery
-  
+        const title = book.querySelector('h2').textContent.toLowerCase();
+        const author = book.querySelector('.text-gray-300').textContent.toLowerCase();
+
         if (title.includes(searchText) || author.includes(searchText)) {
-          book.style.display = 'block'; // Jeśli pasuje, pokaż kolumnę
+          book.style.display = 'block';
         } else {
-          book.style.display = 'none'; // W przeciwnym razie ukryj kolumnę
+          book.style.display = 'none';
         }
       });
     });
+
+    // Nasłuchuj naciśnięcia klawisza na całej stronie
+    document.addEventListener('keydown', redirectToSearchResults);
   </script>
-  
 </body>
 </html>
