@@ -36,9 +36,15 @@
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
-          <a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full"> <!-- Dodane klasy h-full -->
-            <span class="text-gray-300">Logowanie</span>
-          </a>
+          <% if (username && email) { %>
+            <a href="/profile" id="profile-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
+              <span class="text-gray-300">Twój Profil</span>
+            </a>
+          <% } else { %>
+            <a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
+              <span class="text-gray-300">Logowanie</span>
+            </a>
+          <% } %>
         </ul>
       </nav>
     </div>

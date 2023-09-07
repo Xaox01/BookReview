@@ -103,7 +103,7 @@ app.use(passport.session());
 
 app.get('/', async (req, res) => {
   try {
-    const books = await Book.find({}, 'title author coverImage createdAt updatedAt'); // Dodaj 'createdAt' i 'updatedAt' do zapytania
+    const books = await Book.find({}, 'title author coverImage createdAt updatedAt addedBy').populate('addedBy', 'username');
     const username = req.user ? req.user.username : null;
     const email = req.user ? req.user.email : null;
     res.render('index', { books, username, email });
@@ -112,11 +112,14 @@ app.get('/', async (req, res) => {
     res.status(500).send('Błąd serwera');
   }
 });
+
 app.post('/add-book', upload.single('coverImage'), async (req, res) => {
   try {
     const { title, author } = req.body;
     const coverImage = `/uploads/${req.file.filename}`;
-    await Book.create({ title, author, coverImage });
+    const addedBy = req.user; // Przypisz aktualnie zalogowanego użytkownika do pola "addedBy"
+
+    await Book.create({ title, author, coverImage, addedBy });
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -179,9 +182,9 @@ app.post('/register', async (req, res) => {
 
     // Wysłanie wiadomości na Telegram
     const registrationMessage = `
-Nowy użytkownik zarejestrował się:
-- Nazwa użytkownika: ${username}
-- Adres e-mail: ${email}
+    🔴Nowy użytkownik zarejestrował się:
+     - Nazwa użytkownika: ${username}
+     - Adres e-mail: ${email}
 `;
     const chatId = '1997555641'; // Identyfikator czatu, do którego chcesz wysłać wiadomość
 
