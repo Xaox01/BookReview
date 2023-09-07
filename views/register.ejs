@@ -32,19 +32,27 @@
   <div class="container mx-auto flex flex-col items-center mt-8">
     <h2 class="text-xl font-semibold">Rejestracja</h2>
     <form action="/register" method="POST" class="w-full max-w-md mt-4">
-        <div class="mb-4">
-            <label for="username" class="block text-gray-300">Nazwa użytkownika:</label>
-            <input type="text" id="username" name="username" required class="w-full bg-gray-800 text-white border rounded p-2">
-          </div>
-          <div class="mb-4">
-            <label for="password" class="block text-gray-300">Hasło:</label>
-            <input type="password" id="password" name="password" required class="w-full bg-gray-800 text-white border rounded p-2">
-          </div>
+        <% if (messages.length > 0) { %>
+            <div class="bg-red-500 text-white py-2 px-4 my-4 rounded">
+              <%= messages[0] %>
+            </div>
+          <% } %>
+      <div class="mb-4">
+        <label for="username" class="block text-gray-300">Nazwa użytkownika:</label>
+        <input type="text" id="username" name="username" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="email" class="block text-gray-300">Adres e-mail:</label>
+        <input type="email" id="email" name="email" required minlength="4" maxlength="25" class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-gray-300">Hasło:</label>
+        <input type="password" id="password" name="password" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
       <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
         Zarejestruj się
       </button>
     </form>
   </div>
-
- 
+</body>
 </html>

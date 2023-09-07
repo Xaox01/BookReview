@@ -28,10 +28,19 @@
     </div>
   </header>
 
-  <!-- Formularz logowania - wyśrodkowany -->
-  <div class="container mx-auto flex flex-col items-center mt-8">
+
+  
+
+ <!-- Formularz logowania - wyśrodkowany -->
+<div class="container mx-auto flex flex-col items-center mt-8">
     <h2 class="text-xl font-semibold">Logowanie</h2>
     <form action="/login" method="POST" class="w-full max-w-md mt-4">
+        <!-- Wyświetlanie komunikatów błędów -->
+<% if (messages.length > 0) { %>
+    <div class="bg-red-500 text-white py-2 px-4 my-4 rounded">
+      <%= messages[0] %>
+    </div>
+  <% } %>
       <div class="mb-4">
         <label for="username" class="block text-gray-300">Nazwa użytkownika:</label>
         <input type="text" id="username" name="username" required class="w-full bg-gray-800 text-white border rounded p-2">
@@ -44,6 +53,9 @@
         Zaloguj się
       </button>
     </form>
+  
+    <!-- Odnośnik do rejestracji -->
+    <p class="text-gray-300 mt-4">Nie masz konta? <a href="/register" class="text-blue-500 hover:underline">Zarejestruj się</a></p>
   </div>
 
 </body>

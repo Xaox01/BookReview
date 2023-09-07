@@ -10,12 +10,13 @@ const bcrypt = require('bcrypt');
 const expressSession = require('express-session');
 const connectMongoDBSession = require('connect-mongodb-session')(expressSession);
 const bodyParser = require('body-parser');
-const flash = require('connect-flash'); // Dodane connect-flash
+const flash = require('connect-flash');
+const expressLayouts = require('express-ejs-layouts'); // Importuj express-ejs-layouts
+
 
 const app = express();
 
 mongoose.connect('mongodb+srv://studiocrystalgames06:admin@cluster0.qvv9ldl.mongodb.net/?retryWrites=true&w=majority');
-
 
 mongoose.connection.on('error', console.error.bind(console, 'Błąd połączenia z MongoDB:'));
 mongoose.connection.once('open', () => {
@@ -27,11 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Dodane body-parser
+
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(flash());
-
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -81,9 +80,8 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-
 const sessionStore = new connectMongoDBSession({
-  uri: 'mongodb+srv://studiocrystalgames06:admin@cluster0.qvv9ldl.mongodb.net/?retryWrites=true&w=majority  ', // Zaktualizuj URI MongoDB
+  uri: 'mongodb+srv://studiocrystalgames06:admin@cluster0.qvv9ldl.mongodb.net/?retryWrites=true&w=majority',
   collection: 'sessions',
 });
 
@@ -122,7 +120,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login');
+  res.render('login', { messages: req.flash('error') }); // Przekazywanie komunikatów flash jako danych
 });
 
 app.post(
@@ -134,13 +132,20 @@ app.post(
   })
 );
 
+app.get('/profile', (req, res) => {
+  // Tutaj możesz dodać logikę, aby pobrać informacje o użytkowniku, jeśli są potrzebne
+  const username = req.user ? req.user.username : ''; // Pobieramy nazwę użytkownika z sesji
+  const email = req.user ? req.user.email : ''; // Pobieramy adres e-mail z sesji
+  res.render('profile', { username, email }); // Przekazujemy nazwę użytkownika i adres e-mail do widoku "profile"
+});
+
 app.get('/register', (req, res) => {
-  res.render('register', { messages: {} }); // Przekazujemy pusty obiekt na początek
+  res.render('register', { messages: req.flash('error') }); // Przekazujemy komunikaty flash jako dane
 });
 
 app.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
@@ -148,7 +153,14 @@ app.post('/register', async (req, res) => {
       return res.redirect('/register');
     }
 
-    await User.create({ username, password });
+    const existingEmail = await User.findOne({ email });
+
+    if (existingEmail) {
+      req.flash('error', 'Adres e-mail jest już używany');
+      return res.redirect('/register');
+    }
+
+    await User.create({ username, email, password });
     req.flash('success', 'Rejestracja zakończona pomyślnie. Możesz się teraz zalogować.');
     res.redirect('/login');
   } catch (error) {
