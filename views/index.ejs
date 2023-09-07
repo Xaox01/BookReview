@@ -64,6 +64,10 @@
         <input type="text" id="author" name="author" required class="w-full bg-gray-800 text-white border rounded p-2">
       </div>
       <div class="mb-4">
+        <label for="review" class="block text-gray-300">Krótka recenzja (do 200 znaków):</label>
+        <textarea id="review" name="review" rows="4" maxlength="200" class="w-full bg-gray-800 text-white border rounded p-2"></textarea>
+      </div>
+      <div class="mb-4">
         <label for="coverImage" class="block text-gray-300 cursor-pointer">
           <span class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Prześlij okładkę
@@ -92,6 +96,7 @@
           <p class="text-gray-300">Dodano przez: <%= book.addedBy ? book.addedBy.username : 'Nieznany użytkownik' %></p>
           <p class="text-gray-300">Dodano: <%= new Date(book.createdAt).toLocaleString() %></p>
           <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+          <a href="/book/<%= book._id %>" class="block mt-2 text-blue-500 hover:underline">Czytaj recenzję</a>
         </div>
       </div>
       <% if ((index + 1) % 4 === 0) { %>

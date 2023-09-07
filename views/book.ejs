@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moja Biblioteka</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Dodaj tutaj linki do arkuszy stylów CSS i innych plików związanym z innymi widokami -->
+</head>
+<body class="bg-gray-900 text-white p-4">
+  <!-- Górny pasek nawigacyjny (header) -->
+  <header class="bg-gray-800 p-4 sticky top-0">
+    <div class="container mx-auto flex justify-between items-center">
+      <!-- Logo -->
+      <div class="flex items-center space-x-4">
+        <img src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/57891/open-book-emoji-clipart-xl.png" alt="Logo" class="h-8">
+        <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
+      </div>
+      <!-- Wyszukiwarka -->
+      <div class="flex items-center space-x-4"> <!-- Centrowanie -->
+        <div class="relative">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="Szukaj..."
+            class="w-64 px-3 py-1 text-gray-800 bg-gray-100 border rounded-full focus:outline-none focus:shadow-outline"
+            onkeyup="redirectToSearchResults(event)"
+          >
+          <button class="absolute top-0 right-0 mt-2 mr-3" type="submit">
+            <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Nawigacja -->
+      <nav>
+        <ul class="flex space-x-4 items-center h-10"> <!-- Dodane klasy items-center i h-10 -->
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
+          <% if (username && email) { %>
+            <li class="relative group">
+              <a href="/profile" id="profile-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
+                <span class="text-gray-300">Twój Profil</span>
+                <svg class="w-4 h-4 fill-current text-gray-300 group-hover:text-blue-500 absolute top-0 right-0 mt-2 mr-3 pointer-events-none transition duration-300 transform translate-x-0 group-closed:translate-x-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0a9 9 0 1 0 0 18A9 9 0 0 0 10 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
+              </a>
+              <ul class="absolute hidden bg-gray-800 text-white rounded-lg mt-2 space-y-2 shadow-lg right-0 w-40 group-hover:block transition duration-300">
+                <li>
+                  <form action="/logout" method="POST">
+                    <button type="submit" class="block w-full px-4 py-2 text-left">Wyloguj się</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li><a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
+              <span class="text-gray-300">Logowanie</span>
+            </a></li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Treść strony -->
+  <div class="container mx-auto mt-4">
+    <!-- Informacje o książce -->
+    <div class="w-1/2 mx-auto">
+      <h2 class="text-xl font-semibold"><%= book.title %></h2>
+      <p class="text-gray-300">Autor: <%= book.author %></p>
+      <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+    </div>
+
+    <!-- Wyświetlanie recenzji użytkownika -->
+    <% if (book.reviews && book.reviews.length > 0) { %>
+      <h3 class="text-lg font-semibold mt-4">Recenzja użytkownika:</h3>
+      <div>
+        <p><%= book.reviews[0].content %></p>
+      </div>
+    <% } else { %>
+      <p class="text-gray-300 mt-4">Brak recenzji od użytkowników.</p>
+    <% } %>
+  </div>
+
+  <!-- JavaScript do przekierowania po naciśnięciu spacji -->
+  <script>
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('keyup', (event) => {
+      if (event.key === ' ' && document.activeElement !== searchInput) {
+        event.preventDefault();
+        const searchText = searchInput.value.trim();
+        if (searchText.length > 0) {
+          window.location.href = `/search?query=${encodeURIComponent(searchText)}`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

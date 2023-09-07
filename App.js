@@ -115,11 +115,21 @@ app.get('/', async (req, res) => {
 
 app.post('/add-book', upload.single('coverImage'), async (req, res) => {
   try {
-    const { title, author } = req.body;
+    const { title, author, review } = req.body;
     const coverImage = `/uploads/${req.file.filename}`;
-    const addedBy = req.user; // Przypisz aktualnie zalogowanego użytkownika do pola "addedBy"
+    const addedBy = req.user;
 
-    await Book.create({ title, author, coverImage, addedBy });
+    const book = await Book.create({
+      title,
+      author,
+      coverImage,
+      addedBy,
+      reviews: [{
+        content: review,
+        user: addedBy,
+      }],
+    });
+
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -146,6 +156,30 @@ function ensureAuthenticated(req, res, next) {
   }
   res.redirect('/login'); // Jeśli użytkownik nie jest zalogowany, przekieruj go na stronę logowania
 }
+
+app.all('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.error(err);
+    }
+    res.redirect('/'); // Przekieruj na stronę główną lub inną, która ma być wyświetlana po wylogowaniu
+  });
+});
+
+app.get('/book/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id).populate('addedBy');
+    const userReview = book.reviews.find(review => review.user.toString() === req.user._id.toString());
+    const username = req.user ? req.user.username : null;
+    const email = req.user ? req.user.email : null; // Dodaj tę linię, aby przekazać zmienną email
+
+    res.render('book', { book, userReview, username, email }); // Przekazanie email do widoku
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
 
 
 app.get('/profile', ensureAuthenticated, (req, res) => {
@@ -182,9 +216,9 @@ app.post('/register', async (req, res) => {
 
     // Wysłanie wiadomości na Telegram
     const registrationMessage = `
-    🔴Nowy użytkownik zarejestrował się:
-     - Nazwa użytkownika: ${username}
-     - Adres e-mail: ${email}
+    🔴🔴Nowy użytkownik zarejestrował się:🔴🔴
+     👨🏼 Nazwa użytkownika: ${username}
+     ✉️ Adres e-mail: ${email}
 `;
     const chatId = '1997555641'; // Identyfikator czatu, do którego chcesz wysłać wiadomość
 
@@ -196,6 +230,9 @@ app.post('/register', async (req, res) => {
     res.redirect('/register');
   }
 });
+
+
+
 
 // Funkcja do wysyłania wiadomości na Telegram
 function sendTelegramMessage(bot, chatId, message) {
