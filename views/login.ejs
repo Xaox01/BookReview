@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Logowanie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+  <!-- Górny pasek nawigacyjny (header) -->
+  <header class="bg-gray-800 p-4 sticky top-0">
+    <div class="container mx-auto flex justify-between items-center">
+      <!-- Logo -->
+      <div class="flex items-center space-x-4">
+        <img src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/57891/open-book-emoji-clipart-xl.png" alt="Logo" class="h-8">
+        <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
+      </div>
+      <!-- Nawigacja -->
+      <nav>
+        <ul class="flex space-x-4 items-center"> <!-- Dodane klasy items-center -->
+          <li><a href="/" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
+          <a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2"> <!-- Usunięto klasę h-full -->
+            <span class="text-gray-300">Logowanie</span>
+          </a>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Formularz logowania - wyśrodkowany -->
+  <div class="container mx-auto flex flex-col items-center mt-8">
+    <h2 class="text-xl font-semibold">Logowanie</h2>
+    <form action="/login" method="POST" class="w-full max-w-md mt-4">
+      <div class="mb-4">
+        <label for="username" class="block text-gray-300">Nazwa użytkownika:</label>
+        <input type="text" id="username" name="username" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-gray-300">Hasło:</label>
+        <input type="password" id="password" name="password" required class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+        Zaloguj się
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>

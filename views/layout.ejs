@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moja Biblioteka</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-4">
+  <!-- Górny pasek nawigacyjny (header) -->
+  <header class="bg-gray-800 p-4 sticky top-0">
+    <div class="container mx-auto flex justify-between items-center">
+      <!-- Logo -->
+      <div class="flex items-center space-x-4">
+        <img src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/57891/open-book-emoji-clipart-xl.png" alt="Logo" class="h-8">
+        <h1 class="text-2xl font-semibold">Moja Biblioteka</h1>
+      </div>
+      <!-- Wyszukiwarka -->
+      <div class="flex items-center space-x-4"> <!-- Centrowanie -->
+        <div class="relative">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="Szukaj..."
+            class="w-64 px-3 py-1 text-gray-800 bg-gray-100 border rounded-full focus:outline-none focus:shadow-outline"
+            onkeyup="redirectToSearchResults(event)"
+          >
+          <button class="absolute top-0 right-0 mt-2 mr-3" type="submit">
+            <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Nawigacja -->
+      <nav>
+        <ul class="flex space-x-4 items-center h-10"> <!-- Dodane klasy items-center i h-10 -->
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
+          <a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full"> <!-- Dodane klasy h-full -->
+            <span class="text-gray-300">Logowanie</span>
+          </a>
+        </ul>
+      </nav>
+    </div>
+  </header>
+</body>
+</html>

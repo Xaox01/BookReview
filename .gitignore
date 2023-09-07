@@ -1,0 +1,9 @@
+# Katalogi
+node_modules/
+dist/
+coverage/
+
+# Pliki
+.env
+npm-debug.log
+yarn-error.log
