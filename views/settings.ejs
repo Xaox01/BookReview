@@ -67,7 +67,53 @@
     </div>
   </header>
   <main class="container mx-auto my-8 p-4 text-center">
+    <div class="border-b-4 border-blue-500 py-4">
+      <h2 class="text-2xl font-semibold mb-4">Zmiana Hasła</h2>
+      <form action="/settings/change-password" method="POST">
+        <div class="mb-4">
+          <label for="newPassword" class="block text-gray-300">Nowe Hasło:</label>
+          <input type="password" id="newPassword" name="newPassword" required class="w-full bg-gray-800 text-white border rounded p-2">
+        </div>
+        <div class="mb-4">
+          <label for="confirmNewPassword" class="block text-gray-300">Potwierdź Nowe Hasło:</label>
+          <input type="password" id="confirmNewPassword" name="confirmNewPassword" required class="w-full bg-gray-800 text-white border rounded p-2">
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+          Zmień Hasło
+        </button>
+      </form>
+    </div>
+    
+    <div class="py-4">
+      <h2 class="text-2xl font-semibold mb-4">Zmiana Adresu E-mail</h2>
+      <form action="/changemail" method="POST" class="max-w-md mx-auto">
+        <div class="mb-4">
+          <label for="newEmail" class="block text-gray-300">Nowy Adres E-mail:</label>
+          <input type="email" id="newEmail" name="newEmail" required class="w-full bg-gray-800 text-white border rounded p-2">
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+          Zmień E-mail
+        </button>
+      </form>
+    </div>
+    
+    <div class="py-4">
+        <div class="border-b-4 border-blue-500 py-4"></div>
+      <h2 class="text-2xl font-semibold mb-4">Zmiana Nicku</h2>
+      <form action="/changename" method="POST" class="max-w-md mx-auto">
+        <div class="mb-4">
+          <label for="newUsername" class="block text-gray-300">Nowy Nick:</label>
+          <input type="text" id="newUsername" name="newUsername" required class="w-full bg-gray-800 text-white border rounded p-2">
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+          Zmień Nick
+        </button>
+      </form>
+      </div>
+    </div>
   </main>
+  
+  
   <script>
     const coverImageInput = document.getElementById('coverImage');
     const fileNameLabel = document.getElementById('fileNameLabel');

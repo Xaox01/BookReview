@@ -15,9 +15,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const botToken = '6513166210:AAHj6_tmrF-p8AqSPYHzgCeUkBaSIcCkf4o';
 const bot = new TelegramBot(botToken, { polling: false });
 
-
-
-
 const app = express();
 
 mongoose.connect('mongodb+srv://studiocrystalgames06:admin@cluster0.qvv9ldl.mongodb.net/?retryWrites=true&w=majority');
@@ -31,7 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(flash());
@@ -180,10 +176,7 @@ app.get('/book/:id', async (req, res) => {
   }
 });
 
-
-
 app.get('/profile', ensureAuthenticated, (req, res) => {
-  // Tutaj możesz dodać logikę, aby pobrać informacje o użytkowniku, jeśli są potrzebne
   const username = req.user ? req.user.username : ''; // Pobieramy nazwę użytkownika z sesji
   const email = req.user ? req.user.email : ''; // Pobieramy adres e-mail z sesji
   res.render('profile', { username, email }); // Przekazujemy nazwę użytkownika i adres e-mail do widoku "profile"
@@ -238,14 +231,33 @@ app.get('/settings', ensureAuthenticated, (req, res) => {
   res.render('settings', { username, email });
 });
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+app.post('/settings/change-password', ensureAuthenticated, async (req, res) => {
+  const { newPassword, confirmNewPassword } = req.body;
+
+  // Sprawdź, czy nowe hasło i potwierdzenie są identyczne
+  if (newPassword !== confirmNewPassword) {
+    req.flash('error', 'Nowe hasło i potwierdzenie hasła nie pasują do siebie.');
+    return res.redirect('/settings');
   }
-  res.redirect('/login'); 
-}
 
+  try {
+    // Pobierz zalogowanego użytkownika
+    const user = req.user;
 
+    // Zaktualizuj hasło użytkownika
+    user.password = newPassword;
+
+    // Zapisz użytkownika w bazie danych
+    await user.save();
+
+    req.flash('success', 'Hasło zostało pomyślnie zmienione.');
+    res.redirect('/settings');
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Wystąpił błąd podczas zmiany hasła.');
+    res.redirect('/settings');
+  }
+});
 
 // Funkcja do wysyłania wiadomości na Telegram
 function sendTelegramMessage(bot, chatId, message) {
