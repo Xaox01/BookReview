@@ -231,6 +231,19 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.get('/settings', ensureAuthenticated, (req, res) => {
+  const username = req.user.username;
+  const email = req.user.email;
+
+  res.render('settings', { username, email });
+});
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login'); 
+}
 
 
 

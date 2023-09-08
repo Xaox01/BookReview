@@ -28,7 +28,6 @@
     </div>
   </header>
 
-  <!-- Formularz rejestracji -->
   <div class="container mx-auto flex flex-col items-center mt-8">
     <h2 class="text-xl font-semibold">Rejestracja</h2>
     <form action="/register" method="POST" class="w-full max-w-md mt-4">
@@ -49,6 +48,10 @@
         <label for="password" class="block text-gray-300">Hasło:</label>
         <input type="password" id="password" name="password" required class="w-full bg-gray-800 text-white border rounded p-2">
       </div>
+
+      <!-- reCAPTCHA -->
+      <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
+
       <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
         Zarejestruj się
       </button>

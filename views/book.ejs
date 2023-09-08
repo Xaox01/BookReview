@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Moja Biblioteka</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Dodaj tutaj linki do arkuszy stylów CSS i innych plików związanym z innymi widokami -->
+
 </head>
 <body class="bg-gray-900 text-white p-4">
   <!-- Górny pasek nawigacyjny (header) -->
@@ -64,20 +64,22 @@
   <!-- Treść strony -->
   <div class="container mx-auto mt-4">
     <!-- Informacje o książce -->
-    <div class="w-1/2 mx-auto">
+    <div class="w-full md:w-1/2 mx-auto text-center"> <!-- Dostosowano szerokość na różne ekrany i wyśrodkowano tekst -->
       <h2 class="text-xl font-semibold"><%= book.title %></h2>
-      <p class="text-gray-300">Autor: <%= book.author %></p>
-      <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+      <p class="text-gray-300 mt-2">Autor: <%= book.author %></p>
+      <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover mx-auto mt-4"> <!-- Wyśrodkowano obrazek i dodano odstęp -->
     </div>
 
     <!-- Wyświetlanie recenzji użytkownika -->
     <% if (book.reviews && book.reviews.length > 0) { %>
-      <h3 class="text-lg font-semibold mt-4">Recenzja użytkownika:</h3>
-      <div>
-        <p><%= book.reviews[0].content %></p>
+      <div class="w-full md:w-1/2 mx-auto mt-4"> <!-- Dostosowano szerokość na różne ekrany i wyśrodkowano treść -->
+        <h3 class="text-lg font-semibold">Recenzja użytkownika:</h3>
+        <div class="mt-2">
+          <p><%= book.reviews[0].content %></p>
+        </div>
       </div>
     <% } else { %>
-      <p class="text-gray-300 mt-4">Brak recenzji od użytkowników.</p>
+      <p class="text-gray-300 mt-4 text-center">Brak recenzji od użytkowników.</p> <!-- Wyśrodkowano komunikat -->
     <% } %>
   </div>
 
