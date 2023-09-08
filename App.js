@@ -134,7 +134,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login', { messages: req.flash('error') }); // Przekazywanie komunikatów flash jako danych
+  res.render('login', { messages: req.flash('error') });
 });
 
 app.post(
@@ -148,9 +148,9 @@ app.post(
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return next(); // Jeśli użytkownik jest zalogowany, kontynuuj żądanie
+    return next(); 
   }
-  res.redirect('/login'); // Jeśli użytkownik nie jest zalogowany, przekieruj go na stronę logowania
+  res.redirect('/login'); 
 }
 
 app.all('/logout', (req, res) => {
@@ -158,7 +158,7 @@ app.all('/logout', (req, res) => {
     if (err) {
       console.error(err);
     }
-    res.redirect('/'); // Przekieruj na stronę główną lub inną, która ma być wyświetlana po wylogowaniu
+    res.redirect('/'); 
   });
 });
 
@@ -167,9 +167,9 @@ app.get('/book/:id', async (req, res) => {
     const book = await Book.findById(req.params.id).populate('addedBy');
     const userReview = book.reviews.find(review => review.user.toString() === req.user._id.toString());
     const username = req.user ? req.user.username : null;
-    const email = req.user ? req.user.email : null; // Dodaj tę linię, aby przekazać zmienną email
+    const email = req.user ? req.user.email : null;
 
-    res.render('book', { book, userReview, username, email }); // Przekazanie email do widoku
+    res.render('book', { book, userReview, username, email }); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
@@ -177,13 +177,13 @@ app.get('/book/:id', async (req, res) => {
 });
 
 app.get('/profile', ensureAuthenticated, (req, res) => {
-  const username = req.user ? req.user.username : ''; // Pobieramy nazwę użytkownika z sesji
-  const email = req.user ? req.user.email : ''; // Pobieramy adres e-mail z sesji
-  res.render('profile', { username, email }); // Przekazujemy nazwę użytkownika i adres e-mail do widoku "profile"
+  const username = req.user ? req.user.username : ''; 
+  const email = req.user ? req.user.email : ''; 
+  res.render('profile', { username, email }); 
 });
 
 app.get('/register', (req, res) => {
-  res.render('register', { messages: req.flash('error') }); // Przekazujemy komunikaty flash jako dane
+  res.render('register', { messages: req.flash('error') }); 
 });
 
 app.post('/register', async (req, res) => {
@@ -207,13 +207,12 @@ app.post('/register', async (req, res) => {
     req.flash('success', 'Rejestracja zakończona pomyślnie. Możesz się teraz zalogować.');
     res.redirect('/login');
 
-    // Wysłanie wiadomości na Telegram
     const registrationMessage = `
     🔴🔴Nowy użytkownik zarejestrował się:🔴🔴
      👨🏼 Nazwa użytkownika: ${username}
      ✉️ Adres e-mail: ${email}
 `;
-    const chatId = '1997555641'; // Identyfikator czatu, do którego chcesz wysłać wiadomość
+    const chatId = '1997555641'; 
 
     sendTelegramMessage(bot, chatId, registrationMessage);
 
@@ -228,7 +227,7 @@ app.get('/settings', ensureAuthenticated, (req, res) => {
   const username = req.user.username;
   const email = req.user.email;
 
-  res.render('settings', { username, email });
+  res.render('settings', { username, email, errors: req.flash('error'), successMessage: req.flash('success') });
 });
 
 app.post('/settings/change-password', ensureAuthenticated, async (req, res) => {
