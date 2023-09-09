@@ -8,6 +8,7 @@
 </head>
 <body class="bg-gray-900 text-white p-4">
   <!-- Górny pasek nawigacyjny (header) -->
+  
   <header class="bg-gray-800 p-4 sticky top-0">
     <div class="container mx-auto flex justify-between items-center">
       <!-- Logo -->
@@ -27,13 +28,12 @@
             onkeyup="redirectToSearchResults(event)"
           >
           <button class="absolute top-0 right-0 mt-2 mr-3" type="submit">
-            <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
           </button>
         </div>
       </div>
       <!-- Nawigacja -->
       <nav>
-        <ul class="flex space-x-4 items-center h-10"> <!-- Dodane klasy items-center i h-10 -->
+        <ul class="flex space-x-4 items-center h-10 relative"> <!-- Dodane klasy items-center i h-10 -->
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
           <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
@@ -41,9 +41,13 @@
             <li class="relative group">
               <a href="/profile" id="profile-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
                 <span class="text-gray-300">Twój Profil</span>
-                <svg class="w-4 h-4 fill-current text-gray-300 group-hover:text-blue-500 absolute top-0 right-0 mt-2 mr-3 pointer-events-none transition duration-300 transform translate-x-0 group-closed:translate-x-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0a9 9 0 1 0 0 18A9 9 0 0 0 10 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
               </a>
-              <ul class="absolute hidden bg-gray-800 text-white rounded-lg mt-2 space-y-2 shadow-lg right-0 w-40 group-hover:block transition duration-300">
+              <ul class="absolute hidden bg-gray-800 text-white rounded-lg mt-2 space-y-2 shadow-lg right-0 w-40" id="profile-menu">
+                <li>
+                  <a href="/settings" class="block w-full px-4 py-2 text-left">
+                    <button type="button">Ustawienia</button>
+                  </a>
+                </li>
                 <li>
                   <form action="/logout" method="POST">
                     <button type="submit" class="block w-full px-4 py-2 text-left">Wyloguj się</button>
@@ -94,6 +98,25 @@
           window.location.href = `/search?query=${encodeURIComponent(searchText)}`;
         }
       }
+    });
+  </script>
+   <script>
+    const coverImageInput = document.getElementById('coverImage');
+    const fileNameLabel = document.getElementById('fileNameLabel');
+
+    // JavaScript do obsługi opóźnienia
+    // JavaScript do obsługi menu profilu
+    const profileButton = document.getElementById('profile-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+    profileButton.addEventListener('mouseenter', () => {
+      profileMenu.classList.remove('hidden');
+    });
+
+    profileMenu.addEventListener('mouseleave', () => {
+      setTimeout(() => {
+        profileMenu.classList.add('hidden');
+      }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
     });
   </script>
 </body>

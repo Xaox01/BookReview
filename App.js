@@ -134,7 +134,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login', { messages: req.flash('error') });
+  res.render('login', { messages: req.flash('error') }); // Przekazywanie komunikatów flash jako danych
 });
 
 app.post(
@@ -165,9 +165,13 @@ app.all('/logout', (req, res) => {
 app.get('/book/:id', async (req, res) => {
   try {
     const book = await Book.findById(req.params.id).populate('addedBy');
-    const userReview = book.reviews.find(review => review.user.toString() === req.user._id.toString());
     const username = req.user ? req.user.username : null;
     const email = req.user ? req.user.email : null;
+    let userReview = null;
+
+    if (req.user) {
+      userReview = book.reviews.find(review => review.user && review.user.toString() === req.user._id.toString());
+    }
 
     res.render('book', { book, userReview, username, email }); 
   } catch (error) {
@@ -175,7 +179,6 @@ app.get('/book/:id', async (req, res) => {
     res.status(500).send('Błąd serwera');
   }
 });
-
 app.get('/profile', ensureAuthenticated, (req, res) => {
   const username = req.user ? req.user.username : ''; 
   const email = req.user ? req.user.email : ''; 
