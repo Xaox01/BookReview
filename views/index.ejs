@@ -4,6 +4,27 @@
   <meta charset="UTF-8">
   <title>Moja Biblioteka</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    .stars {
+      display: inline-block;
+      font-size: 24px;
+      color: #ddd;
+      cursor: pointer;
+    }
+
+    .star {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 5px;
+      transition: color 0.3s;
+    }
+
+    .star.active {
+      color: #f0d82a;
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
   <!-- Górny pasek nawigacyjny (header) -->
@@ -62,44 +83,58 @@
       </nav>
     </div>
   </header>
+  
 
- <!-- Formularz dodawania nowej książki - wyśrodkowany -->
-<div class="container mx-auto flex flex-col items-center">
-  <h2 class="text-xl font-semibold mt-4">Dodaj nową książkę</h2>
-  <% if (username && email) { %>
-    <form action="/add-book" method="POST" enctype="multipart/form-data" class="w-full max-w-md mt-4">
-      <div class="mb-4">
-        <label for="title" class="block text-gray-300">Tytuł:</label>
-        <input type="text" id="title" name="title" required class="w-full bg-gray-800 text-white border rounded p-2">
-      </div>
-      <div class="mb-4">
-        <label for="author" class="block text-gray-300">Autor:</label>
-        <input type="text" id="author" name="author" required class="w-full bg-gray-800 text-white border rounded p-2">
-      </div>
-      <div class="mb-4">
-        <label for="review" class="block text-gray-300">Krótka recenzja (do 200 znaków):</label>
-        <textarea id="review" name="review" rows="4" maxlength="200" class="w-full bg-gray-800 text-white border rounded p-2"></textarea>
-      </div>
-      <div class="mb-4">
-        <label for="coverImage" class="block text-gray-300 cursor-pointer">
-          <span class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Prześlij okładkę
-          </span>
-          <input type="file" id="coverImage" name="coverImage" required class="w-0 h-0 overflow-hidden absolute">
-        </label>
-        <!-- Wyświetlenie nazwy pliku -->
-        <p class="text-gray-300" id="fileNameLabel">Wybrany plik: Brak pliku</p>
-      </div>
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-        Dodaj książkę
-      </button>
-    </form>
-  <% } else { %>
-    <p> <a href="/login">zaloguj</a> się, aby dodać nową książkę.</p>
-  <% } %>
-</div>
+  <!-- Formularz dodawania nowej książki - wyśrodkowany -->
+  <div class="container mx-auto flex flex-col items-center">
+    <h2 class="text-xl font-semibold mt-4">Dodaj nową książkę</h2>
+    <% if (username && email) { %>
+      <form action="/add-book" method="POST" enctype="multipart/form-data" class="w-full max-w-md mt-4">
+        <div class="mb-4">
+          <label for="title" class="block text-gray-300">Tytuł:</label>
+          <input type="text" id="title" name="title" required class="w-full bg-gray-800 text-white border rounded p-2">
+        </div>
+        <div class="mb-4">
+          <label for="author" class="block text-gray-300">Autor:</label>
+          <input type="text" id="author" name="author" required class="w-full bg-gray-800 text-white border rounded p-2">
+        </div>
+        <div class="mb-4">
+          <label for="review" class="block text-gray-300">Krótka recenzja (do 200 znaków):</label>
+          <textarea id="review" name="review" rows="4" maxlength="200" class="w-full bg-gray-800 text-white border rounded p-2"></textarea>
+        </div>
+        
+        <!-- Dodaj gwiazdki oceny -->
+        <div class="stars" id="star-rating">
+          <span class="star" data-rating="1"><i class="fas fa-star"></i></span>
+          <span class="star" data-rating="2"><i class="fas fa-star"></i></span>
+          <span class="star" data-rating="3"><i class="fas fa-star"></i></span>
+          <span class="star" data-rating="4"><i class="fas fa-star"></i></span>
+          <span class="star" data-rating="5"><i class="fas fa-star"></i></span>
+        </div>
+        
+        <!-- Ukryte pole dla wybranej oceny -->
+        <input type="hidden" id="selectedRating" name="selectedRating" value="">
+        
+        <div class="mb-4">
+          <label for="coverImage" class="block text-gray-300 cursor-pointer">
+            <span class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Prześlij okładkę
+            </span>
+            <input type="file" id="coverImage" name="coverImage" required class="w-0 h-0 overflow-hidden absolute">
+          </label>
+          <!-- Wyświetlenie nazwy pliku -->
+          <p class="text-gray-300" id="fileNameLabel">Wybrany plik: Brak pliku</p>
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+          Dodaj książkę
+        </button>
+      </form>
+    <% } else { %>
+      <p> <a href="/login">zaloguj</a> się, aby dodać nową książkę.</p>
+    <% } %>
+  </div>
 
-<h1>Najnowsze recenzje:</h1>
+  <h1>Najnowsze recenzje:</h1>
 <div class="container mx-auto mt-4">
   <div class="flex flex-wrap -mx-4">
     <% books.reverse().forEach((book, index) => { %>
@@ -120,35 +155,25 @@
   </div>
 </div>
 
+<script>
+  const coverImageInput = document.getElementById('coverImage');
+  const fileNameLabel = document.getElementById('fileNameLabel');
 
+  // JavaScript do obsługi opóźnienia
+  // JavaScript do obsługi menu profilu
+  const profileButton = document.getElementById('profile-button');
+  const profileMenu = document.getElementById('profile-menu');
 
-  <!-- JavaScript do wyświetlania nazwy pliku -->
-  <script>
-    const coverImageInput = document.getElementById('coverImage');
-    const fileNameLabel = document.getElementById('fileNameLabel');
+  profileButton.addEventListener('mouseenter', () => {
+    profileMenu.classList.remove('hidden');
+  });
 
-    // JavaScript do obsługi opóźnienia
-// JavaScript do obsługi menu profilu
-const profileButton = document.getElementById('profile-button');
-const profileMenu = document.getElementById('profile-menu');
-
-profileButton.addEventListener('mouseenter', () => {
-  profileMenu.classList.remove('hidden');
-});
-
-profileMenu.addEventListener('mouseleave', () => {
-  setTimeout(() => {
-    profileMenu.classList.add('hidden');
-  }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
-});
-
-    coverImageInput.addEventListener('change', (event) => {
-      const fileName = event.target.files[0].name;
-      fileNameLabel.textContent = `Wybrany plik: ${fileName}`;
-
-      
-    });
-  </script>
+  profileMenu.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+      profileMenu.classList.add('hidden');
+    }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
+  });
+</script>
 
   <!-- JavaScript do filtrowania książek -->
   <script>
@@ -186,6 +211,35 @@ profileMenu.addEventListener('mouseleave', () => {
 
     // Nasłuchuj naciśnięcia klawisza na całej stronie
     document.addEventListener('keydown', redirectToSearchResults);
+  </script>
+
+  <!-- JavaScript do obsługi gwiazdek oceny -->
+  <script>
+    const stars = document.querySelectorAll('.star');
+    const selectedRating = document.getElementById('selectedRating');
+    const starRating = document.getElementById('star-rating');
+
+    stars.forEach((star, index) => {
+      star.addEventListener('mouseenter', () => {
+        starRating.style.opacity = '0.5'; // Zmniejsz przeźroczystość po najechaniu
+        for (let i = 0; i <= index; i++) {
+          stars[i].classList.add('active'); // Aktywuj gwiazdki od lewej strony
+        }
+      });
+
+      star.addEventListener('mouseleave', () => {
+        starRating.style.opacity = '1'; // Przywróć pełną przeźroczystość po opuszczeniu
+        stars.forEach((s, i) => {
+          if (i > index) {
+            s.classList.remove('active'); // Dezaktywuj gwiazdki po prawej stronie
+          }
+        });
+      });
+
+      star.addEventListener('click', () => {
+        selectedRating.value = index + 1; // Zapisz wybraną ocenę w polu input
+      });
+    });
   </script>
 </body>
 </html>

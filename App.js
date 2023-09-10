@@ -238,7 +238,7 @@ app.post('/settings/change-password', ensureAuthenticated, async (req, res) => {
 
   // Sprawdź, czy nowe hasło i potwierdzenie są identyczne
   if (newPassword !== confirmNewPassword) {
-    req.flash('error', 'Nowe hasło i potwierdzenie hasła nie pasują do siebie.');
+    req.flash('error', 'Hasła do siebie nie pasują.');
     return res.redirect('/settings');
   }
 
