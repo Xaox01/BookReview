@@ -1,3 +1,5 @@
+<% console.log('userRating:', userRating); %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +67,6 @@
     </div>
   </header>
   
-  <!-- Treść strony -->
   <div class="container mx-auto mt-4">
     <!-- Informacje o książce -->
     <div class="w-full md:w-1/2 mx-auto text-center"> <!-- Dostosowano szerokość na różne ekrany i wyśrodkowano tekst -->
@@ -73,21 +74,24 @@
       <p class="text-gray-300 mt-2">Autor: <%= book.author %></p>
       <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover mx-auto mt-4"> <!-- Wyśrodkowano obrazek i dodano odstęp -->
     </div>
-
-    <!-- Wyświetlanie recenzji użytkownika -->
-    <% if (book.reviews && book.reviews.length > 0) { %>
-      <div class="w-full md:w-1/2 mx-auto mt-4"> <!-- Dostosowano szerokość na różne ekrany i wyśrodkowano treść -->
-        <h3 class="text-lg font-semibold">Recenzja użytkownika:</h3>
-        <div class="mt-2">
-          <p><%= book.reviews[0].content %></p>
-        </div>
-      </div>
-    <% } else { %>
-      <p class="text-gray-300 mt-4 text-center">Brak recenzji od użytkowników.</p> <!-- Wyśrodkowano komunikat -->
-    <% } %>
-  </div>
-
-  <!-- JavaScript do przekierowania po naciśnięciu spacji -->
+    <h3 class="text-lg font-semibold">Recenzje użytkowników:</h3>
+<div class="mt-2">
+  <% if (allReviews.length > 0) { %>
+    <% allReviews.forEach(review => { %>
+      <p><%= review.content %></p>
+      <p>Ocena: <%= review.rating ? review.rating : 'Brak oceny' %> / 5</p>
+    <% }); %>
+  <% } else { %>
+    <p>Brak recenzji</p>
+  <% } %>
+</div>
+  
+  
+  
+  
+  
+    
+    
   <script>
     const searchInput = document.getElementById('search');
     searchInput.addEventListener('keyup', (event) => {
@@ -118,6 +122,8 @@
         profileMenu.classList.add('hidden');
       }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
     });
+    
   </script>
+ 
 </body>
 </html>

@@ -103,7 +103,6 @@
           <textarea id="review" name="review" rows="4" maxlength="200" class="w-full bg-gray-800 text-white border rounded p-2"></textarea>
         </div>
         
-        <!-- Dodaj gwiazdki oceny -->
         <div class="stars" id="star-rating">
           <span class="star" data-rating="1"><i class="fas fa-star"></i></span>
           <span class="star" data-rating="2"><i class="fas fa-star"></i></span>
@@ -216,30 +215,30 @@
   <!-- JavaScript do obsługi gwiazdek oceny -->
   <script>
     const stars = document.querySelectorAll('.star');
-    const selectedRating = document.getElementById('selectedRating');
-    const starRating = document.getElementById('star-rating');
+const selectedRating = document.getElementById('selectedRating');
+const starRating = document.getElementById('star-rating');
 
-    stars.forEach((star, index) => {
-      star.addEventListener('mouseenter', () => {
-        starRating.style.opacity = '0.5'; // Zmniejsz przeźroczystość po najechaniu
-        for (let i = 0; i <= index; i++) {
-          stars[i].classList.add('active'); // Aktywuj gwiazdki od lewej strony
-        }
-      });
+stars.forEach((star, index) => {
+  star.addEventListener('mouseenter', () => {
+    starRating.style.opacity = '0.5'; // Zmniejsz przeźroczystość po najechaniu
+    for (let i = 0; i <= index; i++) {
+      stars[i].classList.add('active'); // Aktywuj gwiazdki od lewej strony
+    }
+  });
 
-      star.addEventListener('mouseleave', () => {
-        starRating.style.opacity = '1'; // Przywróć pełną przeźroczystość po opuszczeniu
-        stars.forEach((s, i) => {
-          if (i > index) {
-            s.classList.remove('active'); // Dezaktywuj gwiazdki po prawej stronie
-          }
-        });
-      });
-
-      star.addEventListener('click', () => {
-        selectedRating.value = index + 1; // Zapisz wybraną ocenę w polu input
-      });
+  star.addEventListener('mouseleave', () => {
+    starRating.style.opacity = '1'; // Przywróć pełną przeźroczystość po opuszczeniu
+    stars.forEach((s, i) => {
+      if (i > index) {
+        s.classList.remove('active'); // Dezaktywuj gwiazdki po prawej stronie
+      }
     });
+  });
+
+  star.addEventListener('click', () => {
+    selectedRating.value = index + 1; // Zapisz wybraną ocenę w polu input
+  });
+});
   </script>
 </body>
 </html>

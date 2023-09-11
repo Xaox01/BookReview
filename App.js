@@ -114,6 +114,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
     const { title, author, review } = req.body;
     const coverImage = `/uploads/${req.file.filename}`;
     const addedBy = req.user;
+    const selectedRating = req.body.selectedRating; // Pobierz ocenę z formularza
 
     const book = await Book.create({
       title,
@@ -123,6 +124,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
       reviews: [{
         content: review,
         user: addedBy,
+        rating: selectedRating, // Dodaj ocenę do recenzji
       }],
     });
 
@@ -132,6 +134,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
     res.status(500).send('Błąd serwera');
   }
 });
+
 
 app.get('/login', (req, res) => {
   res.render('login', { messages: req.flash('error') }); // Przekazywanie komunikatów flash jako danych
@@ -173,12 +176,19 @@ app.get('/book/:id', async (req, res) => {
       userReview = book.reviews.find(review => review.user && review.user.toString() === req.user._id.toString());
     }
 
-    res.render('book', { book, userReview, username, email }); 
+    // Przekazujemy ocenę użytkownika jako liczba gwiazdek do widoku
+    let userRating = userReview ? userReview.rating : null;
+
+    // Pobierz wszystkie recenzje danej książki
+    const allReviews = book.reviews;
+
+    res.render('book', { book, userReview, username, email, userRating, allReviews }); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
   }
 });
+
 app.get('/profile', ensureAuthenticated, (req, res) => {
   const username = req.user ? req.user.username : ''; 
   const email = req.user ? req.user.email : ''; 
@@ -260,6 +270,7 @@ app.post('/settings/change-password', ensureAuthenticated, async (req, res) => {
     res.redirect('/settings');
   }
 });
+
 
 // Funkcja do wysyłania wiadomości na Telegram
 function sendTelegramMessage(bot, chatId, message) {

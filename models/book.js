@@ -6,7 +6,7 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
-  createdAt: { type: Date, default: Date.now },
+  rating: Number, // Dodaj to pole oceny
 });
 
 const bookSchema = new mongoose.Schema({
@@ -17,9 +17,9 @@ const bookSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
-  reviews: [reviewSchema], // Dodajemy pole "reviews" do przechowywania recenzji
-}, {
-  timestamps: true,
-});
+  reviews: [reviewSchema], // Zaktualizuj definicję recenzji
+}, { timestamps: true });
 
-module.exports = mongoose.model('Book', bookSchema);
+const Book = mongoose.model('Book', bookSchema);
+
+module.exports = Book;
