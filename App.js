@@ -114,7 +114,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
     const { title, author, review } = req.body;
     const coverImage = `/uploads/${req.file.filename}`;
     const addedBy = req.user;
-    const selectedRating = req.body.selectedRating; // Pobierz ocenę z formularza
+    const selectedRating = req.body.selectedRating; 
 
     const book = await Book.create({
       title,
@@ -124,7 +124,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
       reviews: [{
         content: review,
         user: addedBy,
-        rating: selectedRating, // Dodaj ocenę do recenzji
+        rating: selectedRating, 
       }],
     });
 
@@ -137,7 +137,7 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
 
 
 app.get('/login', (req, res) => {
-  res.render('login', { messages: req.flash('error') }); // Przekazywanie komunikatów flash jako danych
+  res.render('login', { messages: req.flash('error') }); 
 });
 
 app.post(
@@ -176,10 +176,8 @@ app.get('/book/:id', async (req, res) => {
       userReview = book.reviews.find(review => review.user && review.user.toString() === req.user._id.toString());
     }
 
-    // Przekazujemy ocenę użytkownika jako liczba gwiazdek do widoku
     let userRating = userReview ? userReview.rating : null;
 
-    // Pobierz wszystkie recenzje danej książki
     const allReviews = book.reviews;
 
     res.render('book', { book, userReview, username, email, userRating, allReviews }); 
@@ -246,20 +244,16 @@ app.get('/settings', ensureAuthenticated, (req, res) => {
 app.post('/settings/change-password', ensureAuthenticated, async (req, res) => {
   const { newPassword, confirmNewPassword } = req.body;
 
-  // Sprawdź, czy nowe hasło i potwierdzenie są identyczne
   if (newPassword !== confirmNewPassword) {
     req.flash('error', 'Hasła do siebie nie pasują.');
     return res.redirect('/settings');
   }
 
   try {
-    // Pobierz zalogowanego użytkownika
     const user = req.user;
 
-    // Zaktualizuj hasło użytkownika
     user.password = newPassword;
 
-    // Zapisz użytkownika w bazie danych
     await user.save();
 
     req.flash('success', 'Hasło zostało pomyślnie zmienione.');
@@ -282,6 +276,29 @@ function sendTelegramMessage(bot, chatId, message) {
       console.error('Błąd podczas wysyłania wiadomości na Telegramie:', error);
     });
 }
+
+function isAdmin(req, res, next) {
+  if (req.isAuthenticated() && req.user.role === 'admin') {
+  
+    return next();
+  }
+  res.redirect('/'); 
+}
+
+app.get('/admin', isAdmin, async (req, res) => {
+  try {
+    const allUsers = await User.find({}, 'username email role'); 
+
+    const username = req.user ? req.user.username : null; 
+    const email = req.user ? req.user.email : null; 
+
+    res.render('admin', { allUsers, username, email });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
