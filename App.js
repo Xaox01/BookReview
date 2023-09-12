@@ -12,6 +12,7 @@ const connectMongoDBSession = require('connect-mongodb-session')(expressSession)
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const TelegramBot = require('node-telegram-bot-api');
+const methodOverride = require('method-override');
 const botToken = '6513166210:AAHj6_tmrF-p8AqSPYHzgCeUkBaSIcCkf4o';
 const bot = new TelegramBot(botToken, { polling: false });
 
@@ -28,6 +29,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+app.use(methodOverride('_method'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(flash());
@@ -200,6 +203,8 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    const ipAddress = req.ip; // Pobierz adres IP z żądania
+
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
@@ -214,7 +219,7 @@ app.post('/register', async (req, res) => {
       return res.redirect('/register');
     }
 
-    await User.create({ username, email, password });
+    await User.create({ username, email, password, ipAddress }); // Zapisz adres IP w bazie danych
     req.flash('success', 'Rejestracja zakończona pomyślnie. Możesz się teraz zalogować.');
     res.redirect('/login');
 
@@ -222,6 +227,7 @@ app.post('/register', async (req, res) => {
     🔴🔴Nowy użytkownik zarejestrował się:🔴🔴
      👨🏼 Nazwa użytkownika: ${username}
      ✉️ Adres e-mail: ${email}
+     🌐 Adres IP: ${ipAddress}
 `;
     const chatId = '1997555641'; 
 
@@ -287,18 +293,58 @@ function isAdmin(req, res, next) {
 
 app.get('/admin', isAdmin, async (req, res) => {
   try {
-    const allUsers = await User.find({}, 'username email role'); 
-
-    const username = req.user ? req.user.username : null; 
-    const email = req.user ? req.user.email : null; 
-
-    res.render('admin', { allUsers, username, email });
+    const allUsers = await User.find({}, 'username email role ipAddress registrationDate'); // Dodaj pole `registrationDate` do zapytania
+    const username = req.user ? req.user.username : null;
+    const email = req.user ? req.user.email : null;
+    
+    res.render('admin', { allUsers, username, email, user: req.user });
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
   }
 });
 
+
+
+app.delete('/admin/delete/:userId', isAdmin, async (req, res) => {
+  try {
+    const userIdToDelete = req.params.userId;
+    const deletedUser = await User.findByIdAndDelete(userIdToDelete);
+
+    if (!deletedUser) {
+      return res.status(404).send('Nie znaleziono użytkownika do usunięcia.');
+    }
+
+    res.redirect('/admin');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
+app.put('/admin/ban/:userId', isAdmin, async (req, res) => {
+  try {
+    const userIdToBan = req.params.userId;
+    const { banDuration, banReason } = req.body;
+
+    const userToBan = await User.findById(userIdToBan);
+
+    if (!userToBan) {
+      return res.status(404).send('Nie znaleziono użytkownika do zbanowania.');
+    }
+
+    userToBan.isBanned = true;
+    userToBan.banDuration = banDuration;
+    userToBan.banReason = banReason;
+
+    await userToBan.save();
+
+    res.redirect('/admin');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

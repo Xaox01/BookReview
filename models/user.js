@@ -21,7 +21,21 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['user', 'moderator', 'admin'],
-    default: 'user', // Domyślna rola: "user"
+    default: 'user',
+  },
+  ipAddress: String,
+  isBanned: {
+    type: Boolean,
+    default: false,
+  },
+  banDuration: {
+    type: Number, // Przechowuje czas bana w minutach
+    default: 0, // Domyślnie brak bana
+  },
+  banReason: String, // Przechowuje powód bana
+  registrationDate: {
+    type: Date, // Przechowuje datę rejestracji
+    default: Date.now, // Domyślnie ustawia datę na aktualny czas
   },
 });
 

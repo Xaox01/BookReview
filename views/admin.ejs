@@ -68,42 +68,128 @@
   <main class="p-4">
     <h2 class="text-2xl font-semibold">Lista Użytkowników</h2>
     <div class="mt-4">
-      <table class="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Login</th>
-            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Rola</th>
-            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% allUsers.forEach(user => { %>
-            <tr>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div class="flex items-center">
-                  <div class="ml-4">
-                    <div class="text-sm leading-5 font-medium text-gray-900"><%= user.username %></div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div class="text-sm leading-5 text-gray-900"><%= user.email %></div>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div class="text-sm leading-5 text-gray-900"><%= user.role %></div>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                <div class="text-sm leading-5 text-gray-900">
-                  <a href="/admin/delete/<%= user._id %>" class="text-red-600 hover:text-red-900">[USUŃ]</a>
-                </div>
-              </td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
+        <table class="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Login</th>
+                <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Data Rejestracji</th> <!-- Nowa komórka z datą rejestracji -->
+                <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Adres IP</th>
+                <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Rola</th>
+                <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider">Akcje</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% allUsers.forEach(user => { %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                    <div class="flex items-center">
+                      <div class="ml-4">
+                        <div class="text-sm leading-5 font-medium text-gray-900"><%= user.username %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                    <div class="text-sm leading-5 text-gray-900"><%= user.email %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                    <div class="text-sm leading-5 text-gray-900"><%= user.registrationDate.toDateString() %></div>
+                  </td> <!-- Komórka z datą rejestracji -->
+                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                    <div class="text-sm leading-5 text-gray-900"><%= user.ipAddress %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                    <div class="text-sm leading-5 text-gray-900"><%= user.role %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                    <div class="text-sm leading-5 text-gray-900">
+                      <form action="/admin/delete/<%= user._id %>?_method=DELETE" method="POST">
+                        <button type="submit" class="text-red-600 hover:text-red-900">[USUŃ]</button>
+                      </form>
+                      <form action="/admin/ban/<%= user._id %>?_method=PUT" method="POST">
+                        <button type="button" class="text-purple-600 hover:text-purple-900" onclick="openBanModal('<%= user.username %>')">[BAN]</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          
     </div>
   </main>
+
+  <div id="banModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+
+    <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+        <!-- Treść modalu -->
+        <div class="modal-content py-4 text-left px-6">
+            <!-- Nagłówek modalu -->
+            <div class="flex justify-between items-center pb-3">
+                <p class="text-2xl font-bold text-black">Banowanie użytkownika</p>
+                <div class="modal-close cursor-pointer z-50">
+                    <!-- Dodaj ikonę zamykania modalu (np. "X") tutaj -->
+                </div>
+            </div>
+
+            <!-- Treść modalu -->
+            <form action="/admin/ban/<%= user._id %>" method="POST">
+                <div class="mb-4">
+                  <label for="banDuration" class="block text-sm font-medium text-gray-700">Czas bana (w minutach)</label>
+                  <input type="number" id="banDuration" name="banDuration" class="mt-1 p-2 block w-full rounded-md border-gray-300">
+                </div>
+              
+                <div class="mb-4">
+                  <label for="banReason" class="block text-sm font-medium text-gray-700">Powód bana</label>
+                  <textarea id="banReason" name="banReason" rows="4" class="mt-1 p-2 block w-full rounded-md border-gray-300"></textarea>
+                </div>
+              
+                <!-- Przycisk do zatwierdzania banu -->
+                <div class="text-center mt-4">
+                  <button
+                    type="submit"
+                    class="px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400"
+                  >
+                    Zbanuj
+                  </button>
+                </div>
+              </form>
+              
+
+            <!-- Przycisk do zamykania modalu -->
+            <div class="text-center mt-4">
+                <button
+                    class="modal-close px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400"
+                    onclick="closeBanModal()"
+                >
+                    Zamknij
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  
+  
+  <script>
+    let selectedUsername = '';
+  
+    // Funkcja do otwierania modalu i ustawiania wybranej nazwy użytkownika
+    function openBanModal(username) {
+      selectedUsername = username;
+      const modal = document.getElementById('banModal');
+      modal.classList.remove('hidden');
+    }
+  
+    // Funkcja do zamykania modalu
+    function closeBanModal() {
+      selectedUsername = ''; // Wyczyść wybraną nazwę użytkownika
+      const modal = document.getElementById('banModal');
+      modal.classList.add('hidden');
+    }
+  </script>
+  
    <script>
     const profileButton = document.getElementById('profile-button');
     const profileMenu = document.getElementById('profile-menu');
