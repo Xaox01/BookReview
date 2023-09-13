@@ -191,10 +191,29 @@ app.get('/book/:id', async (req, res) => {
 });
 
 app.get('/profile', ensureAuthenticated, (req, res) => {
-  const username = req.user ? req.user.username : ''; 
-  const email = req.user ? req.user.email : ''; 
-  res.render('profile', { username, email }); 
+  const username = req.user ? req.user.username : '';
+  const email = req.user ? req.user.email : '';
+  res.render('profile', { username, email });
 });
+
+app.get('/profil/:username', async (req, res) => {
+  try {
+    const requestedUsername = req.params.username;
+    const user = await User.findOne({ username: requestedUsername });
+
+    if (!user) {
+      // Obsłuż przypadek, gdy użytkownik nie istnieje
+      return res.status(404).send('Ten użytkownik nie istnieje.');
+    }
+
+    res.render('publicProfile', { user, requestedUsername });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
+
 
 app.get('/register', (req, res) => {
   res.render('register', { messages: req.flash('error') }); 
@@ -340,6 +359,21 @@ app.put('/admin/ban/:userId', isAdmin, async (req, res) => {
     await userToBan.save();
 
     res.redirect('/admin');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
+
+
+app.get('/catalog', async (req, res) => {
+  try {
+    const allReviews = await Book.find({}, 'title author addedBy reviews').populate('addedBy', 'username');
+    const username = req.user ? req.user.username : null;
+    const email = req.user ? req.user.email : null;
+    
+    res.render('catalog', { allReviews, username, email });
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
