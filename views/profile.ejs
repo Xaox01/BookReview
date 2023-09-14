@@ -176,22 +176,22 @@
   </header>
   <div class="card min-w-sm border border-gray-700 bg-gray-900 text-gray-50 transition-shadow shadow-xl hover:shadow-xl min-w-max">
     <div class="flex flex-col items-center p-4">
-      <div class="flex justify-center w-40 h-40 md:w-48 md:h-48 rounded-full relative">
-        <div class="h-40 w-40 md:h-48 md:w-48 rounded-full relative avatar flex items-end justify-end text-purple-400 min-w-max absolute flex bg-purple-200 text-purple-100 ring-1 ring-white cursor-pointer">
-          <label for="profilePictureInput" class="h-40 w-40 md:h-48 md:w-48 rounded-full relative">
-            <img
-              id="profilePicture"
-              class="h-40 w-40 md:h-48 md:w-48 rounded-full relative"
-              src="https://i.ytimg.com/vi/GG78vO2pQlY/hqdefault.jpg"
-              alt="Zdjęcie profilowe"
-            />
-            <div class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100">
-              <span class="text-white text-lg">Zmień profilowe</span>
-            </div>
-          </label>
-          <div class="absolute"></div>
-        </div>
+      <div class="h-40 w-40 md:h-48 md:w-48 rounded-full relative avatar flex items-end justify-end text-purple-400 min-w-max absolute flex bg-purple-200 text-purple-100 ring-1 ring-white">
+        <label for="profilePictureInput" class="h-40 w-40 md:h-48 md:w-48 rounded-full relative cursor-pointer group">
+          <img
+            id="profilePicture"
+            class="h-40 w-40 md:h-48 md:w-48 rounded-full relative group-hover:blur-sm transition-blur duration-300"
+            src="https://i.ytimg.com/vi/GG78vO2pQlY/hqdefault.jpg"
+            alt="Zdjęcie profilowe"
+          />
+          <div class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            Zmień profilowe
+          </div>
+        </label>
+        <div class="absolute"></div>
       </div>
+      
+      
     </div>
       <div class="flex flex-col space-y-1 justify-center items-center w-full text-center">
         <span class="text-md whitespace-nowrap text-gray-50 font-semibold"><%= username %></span>
@@ -206,7 +206,7 @@
         <div class="py-2 flex justify-center items-center w-full divide-x divide-gray-400 divide-solid">
           <div class="flex justify-center space-x-4"> <!-- Dodane kontenery -->
             <button class="max-h-max whitespace-nowrap focus:outline-none focus:ring focus:border-blue-300 rounded max-w-max border bg-transparent border-purple-400 text-purple-400 hover:border-purple-800 hover:border-purple-500 px-4 py-1 flex items-center hover:shadow-lg">
-              <span class="mr-2"></span>FOLLOW
+              <span class="mr-2"></span>wyślij wiadomość
               <span class="ml-2"></span>
             </button>
             <button class="max-h-max whitespace-nowrap focus:outline-none focus:ring focus:border-blue-300 rounded max-w-max text-gray-100 bg-green-500 hover:bg-green-600 px-4 py-1 flex items-center hover:shadow-lg">
@@ -215,7 +215,7 @@
                   <path d="M22.5,4c-2,0-3.9,0.8-5.3,2.2L16,7.4l-1.1-1.1C12,3.3,7.2,3.3,4.3,6.2c0,0-0.1,0.1-0.1,0.1c-3,3-3,7.8,0,10.8L16,29l11.8-11.9c3-3,3-7.8,0-10.8C26.4,4.8,24.5,4,22.5,4z"></path>
                 </svg>
               </span>
-              SPONSOR
+              Obserwuj
               <span class="ml-2"></span>
             </button>
           </div>
