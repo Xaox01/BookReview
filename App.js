@@ -193,8 +193,28 @@ app.get('/book/:id', async (req, res) => {
 app.get('/profile', ensureAuthenticated, (req, res) => {
   const username = req.user ? req.user.username : '';
   const email = req.user ? req.user.email : '';
-  res.render('profile', { username, email });
+  const userDescription = req.user ? req.user.description : ''; // Dodaj tę linię
+
+  res.render('profile', { username, email, userDescription }); // Przekazanie userDescription do widoku
 });
+
+app.post('/profile/update-profile-picture', ensureAuthenticated, upload.single('profilePicture'), async (req, res) => {
+  try {
+    const user = req.user;
+
+    const uploadedPicturePath = req.file.path;
+
+    user.profilePicture = uploadedPicturePath;
+
+    await user.save();
+
+    res.redirect('/profile');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
 
 app.get('/profil/:username', async (req, res) => {
   try {

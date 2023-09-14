@@ -29,15 +29,17 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   banDuration: {
-    type: Number, // Przechowuje czas bana w minutach
-    default: 0, // Domyślnie brak bana
+    type: Number, 
+    default: 0, 
   },
-  banReason: String, // Przechowuje powód bana
+  banReason: String, 
   registrationDate: {
-    type: Date, // Przechowuje datę rejestracji
-    default: Date.now, // Domyślnie ustawia datę na aktualny czas
+    type: Date, 
+    default: Date.now, 
   },
+  profilePicture: String, 
 });
+
 
 userSchema.pre('save', async function (next) {
   const user = this;

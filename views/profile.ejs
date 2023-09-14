@@ -4,6 +4,117 @@
   <meta charset="UTF-8">
   <title>Moja Biblioteka</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Wyśrodkowanie zawartości w pionie */
+      border: 1px solid #d1d5db; /* Ramka wokół kontenera */
+      border-radius: 8px;
+      padding: 16px;
+      width: 100%;
+      max-width: 800px; /* Dostosuj maksymalną szerokość kontenera według potrzeb */
+      margin: 0 auto; /* Wyśrodkowanie kontenera na stronie */
+    }
+
+    /* Styl dla obszaru zmiany profilowego */
+    .profile-image-upload {
+      text-align: center;
+      border: 1px solid #d1d5db; /* Ramka wokół obszaru zmiany profilowego */
+      border-radius: 8px;
+      padding: 16px;
+      margin-right: 16px; /* Dodatkowa odległość od innych elementów */
+    }
+
+    /* Styl dla komórki z informacją */
+    .profile-info-cell {
+      font-weight: bold;
+    }
+
+    /* Dodaj styl dla sekcji ustawień */
+    .profile-settings {
+      flex: 1;
+      padding-left: 16px; /* Odległość od lewego marginesu */
+      border-left: 1px solid #d1d5db; /* Dodaj border po lewej stronie sekcji ustawień */
+    }
+
+    /* Styl dla tytułu sekcji ustawień */
+    .profile-settings-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    /* Styl dla poszczególnych opcji ustawień */
+    .profile-setting {
+      margin-bottom: 12px;
+    }
+
+    /* Styl dla przycisku zapisz zmiany */
+    .save-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .save-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Styl dla obszaru ustawień profilu */
+    .profile-settings-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    
+    /* Styl dla przesunięcia sekcji ustawień na lewą stronę */
+    .profile-settings-left {
+      order: -1;
+    }
+
+    /* Styl dla zdjęcia profilowego */
+    .profile-image-container {
+      margin-top: 20px; /* Przesunięcie na dół */
+      background-color: #333; /* Kolor tła */
+      padding: 16px; /* Odstęp od tła */
+      border-radius: 50%; /* Zaokrąglenie */
+      overflow: hidden; /* Ukryj zawartość poza obrębem */
+      width: 200px; /* Nowa szerokość zdjęcia profilowego */
+      height: 200px; /* Nowa wysokość zdjęcia profilowego */
+    }
+
+    .profile-image-container img {
+      width: 100%; /* Zdjęcie wypełnia cały kontener */
+      height: 100%; /* Zdjęcie wypełnia cały kontener */
+      object-fit: cover; /* Skalowanie zdjęcia, aby wypełnić cały kontener */
+    }
+
+    .change-profile-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .profile-image-container:hover .change-profile-text {
+      display: block;
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
   <!-- Górny pasek nawigacyjny (header) -->
@@ -26,73 +137,141 @@
             onkeyup="redirectToSearchResults(event)"
           >
           <button class="absolute top-0 right-0 mt-2 mr-3" type="submit">
-            <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm3-6h5v2h-5V6z"/></svg>
+            <svg class="w-4 h-4 fill-current text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm3 6h5v2h-5V6z"/></svg>
           </button>
         </div>
       </div>
       <!-- Nawigacja -->
-    <!-- Nawigacja -->
-<!-- Nawigacja -->
-<nav>
-  <ul class="flex space-x-4 items-center h-10 relative"> <!-- Dodane klasy items-center i h-10 -->
-    <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
-    <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
-    <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
-    <% if (username && email) { %>
-      <li class="relative group">
-        <a href="/profile" id="profile-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
-          <span class="text-gray-300">Twój Profil</span>
-        </a>
-        <ul class="absolute hidden bg-gray-800 text-white rounded-lg mt-2 space-y-2 shadow-lg right-0 w-40" id="profile-menu">
-          <li>
-            <a href="/settings" class="block w-full px-4 py-2 text-left">
-              <button type="button">Ustawienia</button>
-            </a>
-          </li>
-          <li>
-            <form action="/logout" method="POST">
-              <button type="submit" class="block w-full px-4 py-2 text-left">Wyloguj się</button>
-            </form>
-          </li>
+      <nav>
+        <ul class="flex space-x-4 items-center h-10 relative"> <!-- Dodane klasy items-center i h-10 -->
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Katalog</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Gatunki</a></li>
+          <li><a href="#" class="transition duration-300 hover:text-blue-500">Autorzy</a></li>
+          <% if (username && email) { %>
+            <li class="relative group">
+              <a href="/profile" id="profile-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
+                <span class="text-gray-300">Twój Profil</span>
+              </a>
+              <ul class="absolute hidden bg-gray-800 text-white rounded-lg mt-2 space-y-2 shadow-lg right-0 w-40" id="profile-menu">
+                <li>
+                  <a href="/settings" class="block w-full px-4 py-2 text-left">
+                    <button type="button">Ustawienia</button>
+                  </a>
+                </li>
+                <li>
+                  <form action="/logout" method="POST">
+                    <button type="submit" class="block w-full px-4 py-2 text-left">Wyloguj się</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li><a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
+              <span class="text-gray-300">Logowanie</span>
+            </a></li>
+          <% } %>
         </ul>
-      </li>
-    <% } else { %>
-      <li><a href="/login" id="login-button" class="transition duration-300 hover:text-blue-500 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2 h-full">
-        <span class="text-gray-300">Logowanie</span>
-      </a></li>
-    <% } %>
-  </ul>
-</nav>
-
+      </nav>
     </div>
   </header>
-  <main class="container mx-auto my-8 p-4 text-center">
-    <h1 class="text-2xl font-semibold mb-4">Mój Profil</h1>
-    
-    <!-- Wyświetlanie nazwy użytkownika -->
-    <h2 class="text-xl font-semibold"><%= username %></h2>
-    
-    <!-- Wyświetlanie adresu e-mail -->
-    <p class="text-gray-400"><%= email %></p>
-  </main>
+  <div class="card min-w-sm border border-gray-700 bg-gray-900 text-gray-50 transition-shadow shadow-xl hover:shadow-xl min-w-max">
+    <div class="flex flex-col items-center p-4">
+      <div class="flex justify-center w-40 h-40 md:w-48 md:h-48 rounded-full relative">
+        <div class="h-40 w-40 md:h-48 md:w-48 rounded-full relative avatar flex items-end justify-end text-purple-400 min-w-max absolute flex bg-purple-200 text-purple-100 ring-1 ring-white cursor-pointer">
+          <label for="profilePictureInput" class="h-40 w-40 md:h-48 md:w-48 rounded-full relative">
+            <img
+              id="profilePicture"
+              class="h-40 w-40 md:h-48 md:w-48 rounded-full relative"
+              src="https://i.ytimg.com/vi/GG78vO2pQlY/hqdefault.jpg"
+              alt="Zdjęcie profilowe"
+            />
+            <div class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100">
+              <span class="text-white text-lg">Zmień profilowe</span>
+            </div>
+          </label>
+          <div class="absolute"></div>
+        </div>
+      </div>
+    </div>
+      <div class="flex flex-col space-y-1 justify-center items-center w-full text-center">
+        <span class="text-md whitespace-nowrap text-gray-50 font-semibold"><%= username %></span>
+        <p class="text-sm text-gray-200" id="user-description">
+          <% if (userDescription) { %>
+            <%= userDescription %>
+          <% } else { %>
+            Nie posiadasz jeszcze opisu! <a href="/edit-description">Napisz go!</a>
+          <% } %>
+        </p>
+        </div>
+        <div class="py-2 flex justify-center items-center w-full divide-x divide-gray-400 divide-solid">
+          <div class="flex justify-center space-x-4"> <!-- Dodane kontenery -->
+            <button class="max-h-max whitespace-nowrap focus:outline-none focus:ring focus:border-blue-300 rounded max-w-max border bg-transparent border-purple-400 text-purple-400 hover:border-purple-800 hover:border-purple-500 px-4 py-1 flex items-center hover:shadow-lg">
+              <span class="mr-2"></span>FOLLOW
+              <span class="ml-2"></span>
+            </button>
+            <button class="max-h-max whitespace-nowrap focus:outline-none focus:ring focus:border-blue-300 rounded max-w-max text-gray-100 bg-green-500 hover:bg-green-600 px-4 py-1 flex items-center hover:shadow-lg">
+              <span class="mr-2">
+                <svg height="20" width="20" viewBox="0 0 32 32" class="fill-current text-red-100">
+                  <path d="M22.5,4c-2,0-3.9,0.8-5.3,2.2L16,7.4l-1.1-1.1C12,3.3,7.2,3.3,4.3,6.2c0,0-0.1,0.1-0.1,0.1c-3,3-3,7.8,0,10.8L16,29l11.8-11.9c3-3,3-7.8,0-10.8C26.4,4.8,24.5,4,22.5,4z"></path>
+                </svg>
+              </span>
+              SPONSOR
+              <span class="ml-2"></span>
+            </button>
+          </div>
+        </div>
+        <div class="py-4 flex justify-center items-center w-full divide-x divide-gray-400 divide-solid">
+          <span class="text-center px-2">
+            <span class="font-bold text-gray-50">56</span>
+            <span class="text-gray-100"> followers</span>
+          </span>
+          <span class="text-center px-2">
+            <span class="font-bold text-gray-50">112</span>
+            <span class="text-gray-100"> following</span>
+          </span>
+          <span class="text-center px-2">
+            <span class="font-bold text-gray-50">27</span>
+            <span class="text-gray-100"> repos</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>  
   <script>
     const coverImageInput = document.getElementById('coverImage');
     const fileNameLabel = document.getElementById('fileNameLabel');
-
     // JavaScript do obsługi opóźnienia
-// JavaScript do obsługi menu profilu
-const profileButton = document.getElementById('profile-button');
-const profileMenu = document.getElementById('profile-menu');
-
-profileButton.addEventListener('mouseenter', () => {
-  profileMenu.classList.remove('hidden');
-});
-
-profileMenu.addEventListener('mouseleave', () => {
-  setTimeout(() => {
-    profileMenu.classList.add('hidden');
-  }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
-});
+    // JavaScript do obsługi menu profilu
+    const profileButton = document.getElementById('profile-button');
+    const profileMenu = document.getElementById('profile-menu');
+    profileButton.addEventListener('mouseenter', () => {
+      profileMenu.classList.remove('hidden');
+    });
+    profileMenu.addEventListener('mouseleave', () => {
+      setTimeout(() => {
+        profileMenu.classList.add('hidden');
+      }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
+    });
+  </script>
+  <script>
+    const profilePictureInput = document.getElementById('profilePictureInput');
+    const profilePicture = document.getElementById('profilePicture');
+    const changeProfilePictureButton = document.getElementById('changeProfilePictureButton');
+  
+    // Obsługa zmiany zdjęcia profilowego
+    profilePictureInput.addEventListener('change', () => {
+      const selectedFile = profilePictureInput.files[0];
+  
+      if (selectedFile) {
+        const objectURL = URL.createObjectURL(selectedFile);
+        profilePicture.src = objectURL;
+      }
+    });
+  
+    // Obsługa kliknięcia przycisku "Zmień zdjęcie"
+    changeProfilePictureButton.addEventListener('click', () => {
+      profilePictureInput.click();
+    });
   </script>
 </body>
 </html>
