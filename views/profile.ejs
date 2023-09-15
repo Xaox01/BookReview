@@ -176,20 +176,32 @@
   </header>
   <div class="card min-w-sm border border-gray-700 bg-gray-900 text-gray-50 transition-shadow shadow-xl hover:shadow-xl min-w-max">
     <div class="flex flex-col items-center p-4">
-      <div class="h-40 w-40 md:h-48 md:w-48 rounded-full relative avatar flex items-end justify-end text-purple-400 min-w-max absolute flex bg-purple-200 text-purple-100 ring-1 ring-white">
-        <label for="profilePictureInput" class="h-40 w-40 md:h-48 md:w-48 rounded-full relative cursor-pointer group">
+      <div class="relative">
+        <input
+          type="file"
+          id="profilePictureInput"
+          class="hidden"
+          accept="image/*"
+          onchange="changeProfilePicture(event)"
+        />
+        <label
+          for="profilePictureInput"
+          class="h-40 w-40 md:h-48 md:w-48 rounded-full cursor-pointer group relative"
+        >
           <img
             id="profilePicture"
             class="h-40 w-40 md:h-48 md:w-48 rounded-full relative group-hover:blur-sm transition-blur duration-300"
-            src="https://i.ytimg.com/vi/GG78vO2pQlY/hqdefault.jpg"
+            src="<%= profilePicture %>" 
             alt="Zdjęcie profilowe"
           />
-          <div class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <div
+            class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity"
+          >
             Zmień profilowe
           </div>
         </label>
-        <div class="absolute"></div>
       </div>
+      
       
       
     </div>
@@ -253,25 +265,41 @@
       }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
     });
   </script>
-  <script>
-    const profilePictureInput = document.getElementById('profilePictureInput');
-    const profilePicture = document.getElementById('profilePicture');
-    const changeProfilePictureButton = document.getElementById('changeProfilePictureButton');
-  
-    // Obsługa zmiany zdjęcia profilowego
-    profilePictureInput.addEventListener('change', () => {
-      const selectedFile = profilePictureInput.files[0];
-  
-      if (selectedFile) {
-        const objectURL = URL.createObjectURL(selectedFile);
-        profilePicture.src = objectURL;
-      }
-    });
-  
-    // Obsługa kliknięcia przycisku "Zmień zdjęcie"
-    changeProfilePictureButton.addEventListener('click', () => {
-      profilePictureInput.click();
-    });
-  </script>
+ <script>
+  function changeProfilePicture(event) {
+    const input = event.target;
+    const profilePicture = document.getElementById("profilePicture");
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        profilePicture.src = e.target.result;
+        // Tutaj możesz dodać kod do wysłania zdjęcia na serwer, jeśli jest to wymagane
+        uploadProfilePicture(input.files[0]); // Wywołaj funkcję przesyłania pliku
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function uploadProfilePicture(file) {
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    fetch("/upload-profile-picture", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Tutaj możesz obsłużyć odpowiedź serwera po przesłaniu pliku
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Błąd przesyłania pliku:", error);
+      });
+  }
+</script>
 </body>
 </html>

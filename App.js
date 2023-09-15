@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(methodOverride('_method'));
+app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(flash());
@@ -193,28 +193,38 @@ app.get('/book/:id', async (req, res) => {
 app.get('/profile', ensureAuthenticated, (req, res) => {
   const username = req.user ? req.user.username : '';
   const email = req.user ? req.user.email : '';
-  const userDescription = req.user ? req.user.description : ''; // Dodaj tę linię
+  const userDescription = req.user ? req.user.description : '';
+  const profilePicture = req.user ? req.user.profilePicture : ''; // Dodaj tę linię
 
-  res.render('profile', { username, email, userDescription }); // Przekazanie userDescription do widoku
+  res.render('profile', { username, email, userDescription, profilePicture }); // Przekazanie profilePicture do widoku
 });
 
-app.post('/profile/update-profile-picture', ensureAuthenticated, upload.single('profilePicture'), async (req, res) => {
+app.post('/upload-profile-picture', ensureAuthenticated, upload.single('profilePicture'), async (req, res) => {
   try {
     const user = req.user;
 
-    const uploadedPicturePath = req.file.path;
+    // Sprawdź, czy użytkownik wybrał nowe zdjęcie profilowe
+    if (req.file) {
+      const uploadedPicturePath = req.file.path;
 
-    user.profilePicture = uploadedPicturePath;
+      // Zaktualizuj ścieżkę zdjęcia profilowego użytkownika w bazie danych
+      user.profilePicture = uploadedPicturePath;
 
-    await user.save();
+      // Zapisz zmiany w bazie danych
+      await user.save();
+
+      req.flash('success', 'Zdjęcie profilowe zostało zaktualizowane.');
+    } else {
+      req.flash('error', 'Nie wybrano nowego zdjęcia profilowego.');
+    }
 
     res.redirect('/profile');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Błąd serwera');
+    req.flash('error', 'Wystąpił błąd podczas aktualizacji zdjęcia profilowego.');
+    res.redirect('/profile');
   }
 });
-
 
 app.get('/profil/:username', async (req, res) => {
   try {
