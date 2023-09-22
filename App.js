@@ -194,10 +194,11 @@ app.get('/profile', ensureAuthenticated, (req, res) => {
   const username = req.user ? req.user.username : '';
   const email = req.user ? req.user.email : '';
   const userDescription = req.user ? req.user.description : '';
-  const profilePicture = req.user ? req.user.profilePicture : ''; // Dodaj tę linię
+  const profilePicture = req.user ? req.user.profilePicture : '';
 
-  res.render('profile', { username, email, userDescription, profilePicture }); // Przekazanie profilePicture do widoku
+  res.render('profile', { username, email, userDescription, profilePicture });
 });
+
 
 app.post('/upload-profile-picture', ensureAuthenticated, upload.single('profilePicture'), async (req, res) => {
   try {
@@ -226,6 +227,8 @@ app.post('/upload-profile-picture', ensureAuthenticated, upload.single('profileP
   }
 });
 
+
+
 app.get('/profil/:username', async (req, res) => {
   try {
     const requestedUsername = req.params.username;
@@ -240,6 +243,33 @@ app.get('/profil/:username', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
+  }
+});
+
+app.post('/update-description', ensureAuthenticated, async (req, res) => {
+  try {
+    const { newDescription } = req.body;
+    console.log('Nowy opis otrzymany:', newDescription); // Dodaj ten log, aby sprawdzić dane
+
+    const userId = req.user._id; // Pobranie identyfikatora użytkownika z sesji
+
+    if (!newDescription) {
+      return res.status(400).json({ error: 'Brak przesłanego opisu.' });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Użytkownik nie znaleziony.' });
+    }
+
+    user.description = newDescription;
+    await user.save();
+
+    res.status(200).json({ success: true, description: newDescription });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Wystąpił błąd podczas aktualizacji opisu.' });
   }
 });
 

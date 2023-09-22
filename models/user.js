@@ -29,15 +29,16 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   banDuration: {
-    type: Number, 
-    default: 0, 
+    type: Number,
+    default: 0,
   },
-  banReason: String, 
+  banReason: String,
   registrationDate: {
-    type: Date, 
-    default: Date.now, 
+    type: Date,
+    default: Date.now,
   },
-  profilePicture: String, 
+  profilePicture: String,
+  description: String, 
 });
 
 

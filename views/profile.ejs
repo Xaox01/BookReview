@@ -205,16 +205,25 @@
       
       
     </div>
-      <div class="flex flex-col space-y-1 justify-center items-center w-full text-center">
-        <span class="text-md whitespace-nowrap text-gray-50 font-semibold"><%= username %></span>
-        <p class="text-sm text-gray-200" id="user-description">
-          <% if (userDescription) { %>
-            <%= userDescription %>
-          <% } else { %>
-            Nie posiadasz jeszcze opisu! <a href="/edit-description">Napisz go!</a>
-          <% } %>
-        </p>
-        </div>
+    <div class="flex flex-col space-y-1 justify-center items-center w-full text-center">
+      <span class="text-md whitespace-nowrap text-gray-50 font-semibold"><%= username %></span>
+      <p class="text-sm text-gray-200" id="user-description">
+        <% if (userDescription) { %>
+          <%= userDescription %>
+          <br />
+          <button onclick="showEditDescriptionForm()">Edytuj opis</button>
+        <% } else { %>
+          Nie posiadasz jeszcze opisu, <button onclick="showEditDescriptionForm()">napisz go!</button>
+        <% } %>
+      </p>
+    
+      <div id="edit-description-form" class="hidden mt-4">
+        <form action="/update-description" method="POST">
+          <input type="text" name="newDescription" placeholder="Nowy opis" value="<%= userDescription || '' %>">
+          <button type="submit">Zaktualizuj opis</button>
+        </form>
+      </div>
+    </div>
         <div class="py-2 flex justify-center items-center w-full divide-x divide-gray-400 divide-solid">
           <div class="flex justify-center space-x-4"> <!-- Dodane kontenery -->
             <button class="max-h-max whitespace-nowrap focus:outline-none focus:ring focus:border-blue-300 rounded max-w-max border bg-transparent border-purple-400 text-purple-400 hover:border-purple-800 hover:border-purple-500 px-4 py-1 flex items-center hover:shadow-lg">
@@ -262,7 +271,7 @@
     profileMenu.addEventListener('mouseleave', () => {
       setTimeout(() => {
         profileMenu.classList.add('hidden');
-      }, 500); // 500 ms = 0.5 sekundy (możesz dostosować ten czas)
+      }, 500); 
     });
   </script>
  <script>
@@ -275,8 +284,7 @@
 
       reader.onload = function (e) {
         profilePicture.src = e.target.result;
-        // Tutaj możesz dodać kod do wysłania zdjęcia na serwer, jeśli jest to wymagane
-        uploadProfilePicture(input.files[0]); // Wywołaj funkcję przesyłania pliku
+        uploadProfilePicture(input.files[0]); 
       };
 
       reader.readAsDataURL(input.files[0]);
@@ -300,6 +308,48 @@
         console.error("Błąd przesyłania pliku:", error);
       });
   }
+  function showEditDescriptionForm() {
+    const editDescriptionForm = document.getElementById('edit-description-form');
+    editDescriptionForm.classList.toggle('hidden');
+  }
+  async function updateDescription(event) {
+      try {
+        event.preventDefault();
+
+        const newDescription = document.querySelector('textarea[name="newDescription"]').value;
+
+        const response = await fetch('/update-description', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ newDescription })
+        });
+
+        if (!response.ok) {
+          throw new Error('Nie udało się zaktualizować opisu.');
+        }
+
+        const responseData = await response.json();
+        console.log('Response Data:', responseData);
+
+        const userDescriptionElement = document.getElementById('user-description');
+        userDescriptionElement.innerHTML = responseData.newDescription + '<br /><button onclick="showEditDescriptionForm()" class="text-blue-500 hover:underline">Edytuj opis</button>';
+        document.getElementById('edit-description-form').classList.add('hidden');
+      } catch (error) {
+        console.error('Błąd:', error.message);
+      }
+    }
+
+function saveDescription() {
+  const newDescription = document.querySelector('textarea[name="newDescription"]').value;
+  updateDescription(newDescription);
+}
+function showEditDescriptionForm() {
+    const editForm = document.getElementById('edit-description-form');
+    editForm.classList.toggle('hidden');
+  }
+ 
 </script>
 </body>
 </html>
