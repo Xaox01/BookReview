@@ -24,6 +24,35 @@
     .star.active {
       color: #f0d82a;
     }
+    .online-dot {
+    position: absolute;
+    bottom: -3px; /* Lekko wystająca poniżej profilowego */
+    right: -3px; /* Lekko wystająca po prawej od profilowego */
+    width: 14px;
+    height: 14px;
+    background-color: green;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    z-index: 1; /* Aby było na wierzchu profilowego */
+    .online-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    transform: translate(50%, -50%);
+}
+
+.online {
+    background-color: green;
+}
+
+.offline {
+    background-color: red;
+}
+}
+
   </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
@@ -134,25 +163,46 @@
   </div>
 
   <h1>Najnowsze recenzje:</h1>
-<div class="container mx-auto mt-4">
-  <div class="flex flex-wrap -mx-4">
-    <% books.reverse().forEach((book, index) => { %>
-      <div class="w-1/4 px-4 mb-4">
-        <div class="book-column bg-gray-700 p-4 rounded-lg">
-          <h2 class="text-xl font-semibold"><%= book.title %></h2>
-          <p class="text-gray-300">Autor: <%= book.author %></p>
-          <p class="text-gray-300">Dodano przez: <%= book.addedBy ? book.addedBy.username : 'Nieznany użytkownik' %></p>
-          <p class="text-gray-300">Dodano: <%= new Date(book.createdAt).toLocaleString() %></p>
-          <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
-          <a href="/book/<%= book._id %>" class="block mt-2 text-blue-500 hover:underline">Czytaj recenzję</a>
+  <div class="container mx-auto mt-4">
+    <div class="flex flex-wrap -mx-4">
+      <% books.reverse().forEach((book, index) => { %>
+        <div class="w-1/4 px-4 mb-4">
+          <div class="book-column bg-gray-700 p-4 rounded-lg">
+            <h2 class="text-xl font-bold text-center" style="font-family: 'Arial', sans-serif;"><%= book.title %></h2>
+            <p class="text-gray-300">Autor: <%= book.author %></p>
+            <div class="flex items-center mb-2">
+              <p class="text-gray-300">Dodano przez: <%= book.addedBy ? book.addedBy.username : 'Nieznany użytkownik' %></p>
+            </div>
+            <img src="<%= book.coverImage %>" alt="Okładka" class="w-32 h-48 object-cover">
+            <a href="/book/<%= book._id %>" class="block mt-2 text-blue-500 hover:underline">Czytaj recenzję</a>
+            <div class="flex justify-between items-center mt-auto">
+              <p class="text-sm text-gray-400"><%= new Date(book.createdAt).toLocaleString() %></p>
+              <div class="relative">
+                <img src="<%= book.addedBy ? book.addedBy.profilePicture : '/images/default-profile-image.png' %>" alt="Zdjęcie profilowe autora" class="w-10 h-10 rounded-full object-cover">
+                <% if (username) { %>
+                    <div class="online-dot online"></div>
+                <% } else { %>
+                    <div class="online-dot offline"></div>
+                <% } %>
+            </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <% if ((index + 1) % 4 === 0) { %>
-        <div class="w-full"></div> <!-- Nowy wiersz -->
-      <% } %>
-    <% }); %>
+        <% if ((index + 1) % 4 === 0) { %>
+          <div class="w-full"></div> <!-- Nowy wiersz -->
+        <% } %>
+      <% }); %>
+    </div>
   </div>
-</div>
+  
+  
+  
+  
+  
+  
+  
+  
+
 
 <script>
   const coverImageInput = document.getElementById('coverImage');

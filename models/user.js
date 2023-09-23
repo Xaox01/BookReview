@@ -38,9 +38,12 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
   profilePicture: String,
-  description: String, 
+  description: String,
+  reviewCount: {
+    type: Number,
+    default: 0,
+  },
 });
-
 
 userSchema.pre('save', async function (next) {
   const user = this;

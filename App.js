@@ -102,10 +102,18 @@ app.use(passport.session());
 
 app.get('/', async (req, res) => {
   try {
-    const books = await Book.find({}, 'title author coverImage createdAt updatedAt addedBy').populate('addedBy', 'username');
+    const books = await Book.find({}, 'title author coverImage createdAt updatedAt addedBy').populate('addedBy', 'username profilePicture');
     const username = req.user ? req.user.username : null;
     const email = req.user ? req.user.email : null;
-    res.render('index', { books, username, email });
+    const profilePicture = req.user ? req.user.profilePicture : '';
+    const userIsActive = req.isAuthenticated(); // Dodana informacja o aktywności użytkownika
+
+    const authorsData = books.map(book => ({
+      author: book.author,
+      profilePicture: book.addedBy ? book.addedBy.profilePicture : null
+    }));
+
+    res.render('index', { books, username, email, profilePicture, authorsData, userIsActive });
   } catch (err) {
     console.error(err);
     res.status(500).send('Błąd serwera');
@@ -117,26 +125,35 @@ app.post('/add-book', upload.single('coverImage'), async (req, res) => {
     const { title, author, review } = req.body;
     const coverImage = `/uploads/${req.file.filename}`;
     const addedBy = req.user;
-    const selectedRating = req.body.selectedRating; 
+    const selectedRating = req.body.selectedRating;
 
+    // Stworzenie nowej recenzji
+    const newReview = {
+      content: review,
+      user: addedBy,
+      rating: selectedRating,
+    };
+
+    // Dodanie recenzji do nowej książki
     const book = await Book.create({
       title,
       author,
       coverImage,
       addedBy,
-      reviews: [{
-        content: review,
-        user: addedBy,
-        rating: selectedRating, 
-      }],
+      reviews: [newReview],
     });
 
+    if (addedBy) {
+      addedBy.reviewCount += 1;
+      await addedBy.save();
+    }
     res.redirect('/');
   } catch (err) {
     console.error(err);
     res.status(500).send('Błąd serwera');
   }
 });
+
 
 
 app.get('/login', (req, res) => {
@@ -190,14 +207,23 @@ app.get('/book/:id', async (req, res) => {
   }
 });
 
-app.get('/profile', ensureAuthenticated, (req, res) => {
-  const username = req.user ? req.user.username : '';
-  const email = req.user ? req.user.email : '';
-  const userDescription = req.user ? req.user.description : '';
-  const profilePicture = req.user ? req.user.profilePicture : '';
+app.get('/profile', ensureAuthenticated, async (req, res) => {
+  try {
+    const username = req.user ? req.user.username : '';
+    const email = req.user ? req.user.email : '';
+    const userDescription = req.user ? req.user.description : '';
+    const profilePicture = req.user ? req.user.profilePicture : '';
+    const userReviews = req.user && req.user.reviews ? req.user.reviews.reverse() : [];  // Sprawdzenie czy reviews są zdefiniowane
+    const books = await Book.find({}, 'title author coverImage createdAt updatedAt addedBy').populate('addedBy', 'username');
 
-  res.render('profile', { username, email, userDescription, profilePicture });
+    res.render('profile', { user: req.user, username, email, userDescription, profilePicture, userReviews, books });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
 });
+
+
 
 
 app.post('/upload-profile-picture', ensureAuthenticated, upload.single('profilePicture'), async (req, res) => {
@@ -265,8 +291,8 @@ app.post('/update-description', ensureAuthenticated, async (req, res) => {
 
     user.description = newDescription;
     await user.save();
+    res.redirect('/profile')
 
-    res.status(200).json({ success: true, description: newDescription });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Wystąpił błąd podczas aktualizacji opisu.' });
