@@ -213,16 +213,18 @@ app.get('/profile', ensureAuthenticated, async (req, res) => {
     const email = req.user ? req.user.email : '';
     const userDescription = req.user ? req.user.description : '';
     const profilePicture = req.user ? req.user.profilePicture : '';
-    const userReviews = req.user && req.user.reviews ? req.user.reviews.reverse() : [];  // Sprawdzenie czy reviews są zdefiniowane
-    const books = await Book.find({}, 'title author coverImage createdAt updatedAt addedBy').populate('addedBy', 'username');
 
-    res.render('profile', { user: req.user, username, email, userDescription, profilePicture, userReviews, books });
+    // Pobierz recenzje zalogowanego użytkownika
+    const userReviews = await Book.find({ addedBy: req.user._id })
+      .sort({ 'createdAt': -1 })  // Sortuj recenzje od najnowszych
+      .limit(15);  // Ogranicz liczbę recenzji do 4
+
+    res.render('profile', { user: req.user, username, email, userDescription, profilePicture, userReviews });
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
   }
 });
-
 
 
 
@@ -299,7 +301,52 @@ app.post('/update-description', ensureAuthenticated, async (req, res) => {
   }
 });
 
+app.get('/edit/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
 
+    if (!book) {
+      return res.status(404).send('Nie znaleziono wpisu do edycji.');
+    }
+
+    // Sprawdź czy zalogowany użytkownik jest właścicielem wpisu
+    if (book.addedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).send('Nie masz uprawnień do edycji tego wpisu.');
+    }
+
+    res.render('edit', { book });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
+// Endpoint do aktualizacji wpisu
+app.post('/edit/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const { title, author, review } = req.body;
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      { title, author, review },
+      { new: true }
+    );
+
+    if (!updatedBook) {
+      return res.status(404).send('Nie znaleziono wpisu do zaktualizowania.');
+    }
+
+    // Sprawdź czy zalogowany użytkownik jest właścicielem wpisu
+    if (updatedBook.addedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).send('Nie masz uprawnień do edycji tego wpisu.');
+    }
+
+    res.redirect(`/book/${req.params.id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
 
 app.get('/register', (req, res) => {
   res.render('register', { messages: req.flash('error') }); 
