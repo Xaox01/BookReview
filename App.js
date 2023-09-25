@@ -207,6 +207,29 @@ app.get('/book/:id', async (req, res) => {
   }
 });
 
+app.delete('/delete-book/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const bookId = req.params.id;
+
+    const deletedBook = await Book.findByIdAndDelete(bookId);
+
+    if (!deletedBook) {
+      return res.status(404).send('Nie znaleziono wpisu do usunięcia.');
+    }
+
+    // Sprawdź czy zalogowany użytkownik jest właścicielem wpisu
+    if (deletedBook.addedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).send('Nie masz uprawnień do usunięcia tego wpisu.');
+    }
+
+    res.status(200).send('Wpis został pomyślnie usunięty.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Błąd serwera');
+  }
+});
+
+
 app.get('/profile', ensureAuthenticated, async (req, res) => {
   try {
     const username = req.user ? req.user.username : '';

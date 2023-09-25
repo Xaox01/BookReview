@@ -1,20 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edytuj wpis</title>
+  <title>Moja Biblioteka - Edycja wpisu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-fv40Xd+sHoj1au29CtYJ9zNUQmJ3jIsA8enUeEThsD0l/sXXKkm7/pKjIjXG/HNcnvGIlTk/x5zT/H+cDnOeGw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
-  <h1>Edytuj wpis</h1>
-  <form action="/edit/<%= book._id %>" method="POST">
-    <label for="title">Tytuł:</label>
-    <input type="text" id="title" name="title" value="<%= book.title %>"><br>
-    <label for="author">Autor:</label>
-    <input type="text" id="author" name="author" value="<%= book.author %>"><br>
-    <label for="review">Recenzja:</label>
-    <textarea id="review" name="review"><%= book.review %></textarea><br>
-    <button type="submit">Zaktualizuj wpis</button>
-  </form>
+<body class="bg-gray-900 text-white p-4">
+  <div class="container mx-auto flex flex-col items-center mt-8">
+    <h2 class="text-xl font-semibold">Edycja wpisu</h2>
+    <form action="/edit/<%= book._id %>" method="POST" class="w-full max-w-md mt-4">
+      <div class="mb-4">
+        <label for="title" class="block text-gray-300">Tytuł:</label>
+        <input type="text" id="title" name="title" value="<%= book.title %>" class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="author" class="block text-gray-300">Autor:</label>
+        <input type="text" id="author" name="author" value="<%= book.author %>" class="w-full bg-gray-800 text-white border rounded p-2">
+      </div>
+      <div class="mb-4">
+        <label for="review" class="block text-gray-300">Recenzja:</label>
+        <textarea id="review" name="review" class="w-full bg-gray-800 text-white border rounded p-2"><%= book.review %></textarea>
+      </div>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+        Zaktualizuj wpis
+      </button>
+
+      <button type="button" onclick="confirmDelete('<%= book._id %>')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 ml-4">
+        Usuń wpis
+      </button>
+    </form>
+  </div>
+
+  <script>
+    async function confirmDelete(bookId) {
+      if (confirm("Czy na pewno chcesz usunąć ten wpis?")) {
+        try {
+          const response = await fetch(`/delete-book/${bookId}`, {
+            method: 'DELETE',
+          });
+  
+          if (response.ok) {
+            alert("Wpis został usunięty!");
+            window.location.replace('/');
+          } else {
+            const errorMessage = await response.text();
+            alert(`Wystąpił błąd podczas usuwania wpisu: ${errorMessage}`);
+          }
+        } catch (error) {
+          console.error('Błąd:', error);
+          alert('Wystąpił błąd podczas komunikacji z serwerem.');
+        }
+      }
+    }
+  </script>
+  
 </body>
 </html>
