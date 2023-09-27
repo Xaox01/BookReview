@@ -194,7 +194,7 @@
             <div class="flex justify-between items-center mt-auto">
               <p class="text-sm text-gray-400"><%= new Date(book.createdAt).toLocaleString() %></p>
               <div class="relative tooltip-container">
-                <a href="<%= book.addedBy ? '/profile/' + book.addedBy.username : '#' %>" title="Profil autora">
+                <a href="<%= book.addedBy ? '/profil/' + book.addedBy.username : '#' %>" title="Profil autora">
                   <img src="<%= book.addedBy ? book.addedBy.profilePicture : '/images/default-profile-image.png' %>" alt="Zdjęcie profilowe autora" class="w-10 h-10 rounded-full object-cover">
                 </a>
                 <div class="tooltip">

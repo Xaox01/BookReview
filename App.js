@@ -284,18 +284,24 @@ app.get('/profil/:username', async (req, res) => {
   try {
     const requestedUsername = req.params.username;
     const user = await User.findOne({ username: requestedUsername });
+    const username = req.user ? req.user.username : '';
+    const userDescription = req.user ? req.user.description : '';
+    const email = req.user ? req.user.email : null;
+    const profilePicture = req.user ? req.user.profilePicture : '';
+    const userReviews = await Book.find({ addedBy: user._id });
 
     if (!user) {
-      // Obsłuż przypadek, gdy użytkownik nie istnieje
       return res.status(404).send('Ten użytkownik nie istnieje.');
     }
 
-    res.render('publicProfile', { user, requestedUsername });
+    res.render('publicProfile', { user, requestedUsername, userDescription, username, email, profilePicture, userReviews });
   } catch (error) {
     console.error(error);
     res.status(500).send('Błąd serwera');
   }
 });
+
+
 
 app.post('/update-description', ensureAuthenticated, async (req, res) => {
   try {

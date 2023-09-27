@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil użytkownika <%= requestedUsername %></title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= requestedUsername %> Profile</title>
 </head>
 <body>
-    <h1>Profil użytkownika <%= requestedUsername %></h1>
+  <h1><%= requestedUsername %> Profile</h1>
 
-    <% if (user) { %>
-        <p>Nazwa użytkownika: <%= user.username %></p>
-        <p>Adres email: <%= user.email %></p>
-        <!-- Dodaj inne informacje o użytkowniku, które chcesz wyświetlić -->
-    <% } else { %>
-        <p>Ten użytkownik nie istnieje.</p>
-        <!-- Możesz dodać dowolny komunikat, który chcesz wyświetlić, gdy użytkownik nie istnieje -->
-    <% } %>
-
-    <!-- Dodaj dowolne inne treści na stronie profilu ogólnodostępnego -->
+  <% if (user) { %>
+    <img src="<%= user.profilePicture %>" alt="Profile Picture">
+    <p>Nick: <%= user.username %></p>
+    <p>Recenzje użytkownika: <%= userReviews.length %></p>
+  <% } else { %>
+    <p>Ten użytkownik nie istnieje.</p>
+  <% } %>
 </body>
 </html>
